@@ -29,10 +29,4 @@ public class DefaultConfig {
 		Validator validator = factory.getValidator();
 		return validator;
 	}
-
-	@Bean
-	public RestTemplate getRestTemplate() {
-		RestTemplate rest = new RestTemplate();
-		return rest;
-	}
 }

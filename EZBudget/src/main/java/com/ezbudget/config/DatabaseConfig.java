@@ -1,5 +1,7 @@
 package com.ezbudget.config;
 
+import java.util.HashMap;
+
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
@@ -12,6 +14,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import com.ezbudget.entity.IEntity;
+import com.ezbudget.repository.IRepository;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -30,6 +34,11 @@ public class DatabaseConfig {
 	@Value("${jdbc.pool.maxsize}")
 	private int poolSize;
 
+	@Bean
+	public HashMap<String, IRepository<IEntity>> getRepositories() {
+		return new HashMap<String, IRepository<IEntity>>();
+	}
+	
 	@Bean
 	public DataSource getSqlDataSource() {
 		HikariConfig config = new HikariConfig();

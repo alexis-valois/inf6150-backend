@@ -45,7 +45,7 @@ dependencies {
 	compile "org.slf4j:jcl-over-slf4j"
 	compile "org.slf4j:slf4j-api"
 	compile "org.slf4j:jul-to-slf4j"
-	compile "javax.servlet:javax.servlet-api"
+	compile "javax.servlet:javax.servlet-api:3.0.1"
 	compile "org.springframework:spring-jdbc"
 	compile "mysql:mysql-connector-java"
 	compile "com.zaxxer:HikariCP"
