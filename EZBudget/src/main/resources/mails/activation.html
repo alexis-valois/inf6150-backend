@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title th:remove="all">EZ Budget Account Activation</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+    <p>
+      Bonjour <span th:text="${firstName}"></span>,
+    </p>
+    <p>
+      Vous vous êtes enregistré au service <b>EZ Budget</b> en date du
+      <span th:text="${#dates.format(subscriptionDate)}"></span>
+    </p>
+    <p>Votre lien d'activation est le suivant:</p>
+	<a th:href="@{http://{baseUrl}/{activationToken}/{username}(username=${username},activationToken=${activationToken},baseUrl=${baseUrl})}">http://<span th:text="${baseUrl}"></span>/<span th:text="${activationToken}"></span>/<span th:text="${username}"></span></a>
+    <p>(Si vous n'arrivez pas à suivre le lien en cliquant, veuillez copier/coller le lien dans votre navigateur)</p>
+    <p>
+      Au plaisir, <br />
+      <em>L'équipe EZ Budget</em>
+    </p>
+  </body>
+</html>

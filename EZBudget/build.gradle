@@ -1,0 +1,65 @@
+buildscript {
+	ext {
+		springBootVersion = '1.4.1.BUILD-SNAPSHOT'
+	}
+	repositories {
+		mavenCentral()
+		maven { url "https://repo.spring.io/snapshot" }
+		maven { url "https://repo.spring.io/milestone" }
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'spring-boot'
+
+jar {
+	baseName = 'EZBudget-RestApi'
+	version = '0.0.1-SNAPSHOT'
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+	maven { url "https://repo.spring.io/snapshot" }
+	maven { url "https://repo.spring.io/milestone" }
+}
+
+
+dependencies {
+	compile group: 'org.springframework.boot', name: 'spring-boot-dependencies', version: '1.4.0.RELEASE', ext: 'pom'
+	compile "org.springframework.boot:spring-boot-autoconfigure"
+	compile "org.springframework:spring-context"
+	compile "org.springframework:spring-context-support"
+	compile ("org.springframework:spring-core") {
+		exclude module: 'commons-logging'
+	}
+	compile ("org.springframework.boot:spring-boot-starter-web") {
+		exclude module: 'spring-boot-starter-tomcat'
+	}
+	compile "org.springframework:spring-webmvc"
+	compile "org.slf4j:jcl-over-slf4j"
+	compile "org.slf4j:slf4j-api"
+	compile "org.slf4j:jul-to-slf4j"
+	compile "javax.servlet:javax.servlet-api:3.0.1"
+	compile "org.springframework:spring-jdbc"
+	compile "mysql:mysql-connector-java"
+	compile "com.zaxxer:HikariCP"
+	compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	compile "org.springframework.boot:spring-boot-starter-jetty"
+	compile("org.springframework.boot:spring-boot-starter-actuator")
+	compile 'org.hibernate:hibernate-validator'
+    compile('org.flywaydb:flyway-core')
+    compile("org.json:json")
+    compile("joda-time:joda-time")
+    compile group: 'commons-io', name: 'commons-io', version: '2.5'
+    compile group: 'com.google.guava', name: 'guava', version: '19.0'
+    compile 'com.google.code.gson:gson'
+    compile 'org.springframework.security:spring-security-crypto'
+    compile 'org.springframework.boot:spring-boot-starter-mail'
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+}
