@@ -8,8 +8,11 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.ezbudget.entity.EBAuthority;
 import com.ezbudget.entity.EBUser;
+import com.ezbudget.enumtype.RoleType;
 import com.ezbudget.filter.QueryCriteria;
+import com.ezbudget.repository.EBAuthorityRepository;
 import com.ezbudget.repository.EBUserRepository;
 
 @Service
@@ -19,7 +22,30 @@ public class AuthenticationService {
 	private PasswordEncoder passwordEncoder;
 
 	@Autowired
+	private MailService mailService;
+
+	@Autowired
+	private EBAuthorityRepository authRepository;
+
+	@Autowired
 	private EBUserRepository userRepository;
+
+	public void register(EBUser newUser) throws Exception {
+		UUID uuid = UUID.randomUUID();
+		String activationToken = uuid.toString();
+		newUser.setActivationToken(activationToken);
+		newUser.setDateCreated(new DateTime());
+		newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+		long userId = userRepository.create(newUser, activationToken);
+
+		EBAuthority authority = new EBAuthority();
+		authority.setAuthority(RoleType.USER);
+		authority.setUsername(newUser.getUsername());
+
+		authRepository.register(authority);
+
+		mailService.sendActivationMail(newUser);
+	}
 
 	public EBUser authenticate(String username, String password) throws Exception {
 		EBUser user = userRepository.findByUsername(username);

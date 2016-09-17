@@ -22,9 +22,9 @@ public class JSONObjectToEntityConverter implements Converter<JSONObject, IEntit
 	@Override
 	public IEntity convert(JSONObject source) {
 		String type = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, source.getString("entityType"));
-		type = "MT" + type;
+		type = "EB" + type;
 		try {
-			Class<?> clazz = Class.forName("com.movietracker.restapi.entity." + type);
+			Class<?> clazz = Class.forName("com.ezbudget.entity." + type);
 			return (IEntity) gson.fromJson(source.toString(), clazz);
 		} catch (Throwable e) {
 			logger.debug(e.getMessage());

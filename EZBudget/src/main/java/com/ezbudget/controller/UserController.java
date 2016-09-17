@@ -6,12 +6,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ezbudget.converter.JSONObjectToEntityConverter;
 import com.ezbudget.entity.EBUser;
 import com.ezbudget.service.AuthenticationService;
 import com.ezbudget.web.RestRessourceAssembler;
@@ -27,6 +29,9 @@ public class UserController {
 
 	@Autowired
 	private AuthenticationService authService;
+
+	@Autowired
+	private JSONObjectToEntityConverter jsonObjectToEntityConverter;
 
 	@RequestMapping(method = { RequestMethod.POST }, value = { "/login" })
 	@ResponseBody
@@ -56,6 +61,23 @@ public class UserController {
 			return new ResponseEntity<JSONObject>(HttpStatus.BAD_REQUEST);
 		}
 		rtn.put("LoggedOut", loggedOut);
+		return new ResponseEntity<JSONObject>(rtn, HttpStatus.OK);
+	}
+
+	@RequestMapping(method = { RequestMethod.PUT }, value = { "/register" }, headers = {
+			"content-type!=multipart/form-data" })
+	@ResponseBody
+	ResponseEntity<JSONObject> register(@RequestBody JSONObject newUser) {
+		JSONObject rtn = new JSONObject();
+		try {
+			newUser.put("entityType", "user");
+			EBUser user = (EBUser) jsonObjectToEntityConverter.convert(newUser);
+			authService.register(user);
+			rtn.put("status", "registration successful");
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return new ResponseEntity<JSONObject>(HttpStatus.BAD_REQUEST);
+		}
 		return new ResponseEntity<JSONObject>(rtn, HttpStatus.OK);
 	}
 }

@@ -3,9 +3,11 @@ package com.ezbudget.repository;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,8 +148,24 @@ public class EBUserRepository implements IRepository<EBUser> {
 
 	@Override
 	public long create(EBUser newInstance, String sessionToken) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("username", newInstance.getUsername());
+		param.put("first_name", newInstance.getFirstName());
+		param.put("last_name", newInstance.getLastName());
+		param.put("password", newInstance.getPassword());
+		param.put("enabled", false);
+		param.put("activation_token", newInstance.getActivationToken());
+		param.put("date_created", new Timestamp(new DateTime().getMillis()));
+		param.put("deleted", false);
+		param.put("locked", false);
+		param.put("credentials_expired", false);
+		param.put("account_expired", false);
+		param.put("email", newInstance.getEmail());
+		Number generatedId = this.insertTemplate.executeAndReturnKey(param);
+		if (generatedId.longValue() < 1) {
+			throw new RuntimeException("Unable to create new User");
+		}
+		return generatedId.longValue();
 	}
 
 	@Override
