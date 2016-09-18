@@ -30,6 +30,10 @@ public class AuthenticationService {
 	@Autowired
 	private EBUserRepository userRepository;
 
+	public void activate(String activationToken, String username) throws Exception {
+		userRepository.activate(activationToken, username);
+	}
+
 	public void register(EBUser newUser) throws Exception {
 		UUID uuid = UUID.randomUUID();
 		String activationToken = uuid.toString();

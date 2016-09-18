@@ -44,6 +44,17 @@ public class EBUserRepository implements IRepository<EBUser> {
 	@Autowired
 	private HashMap<String, IRepository<?>> repositories;
 
+	public synchronized void activate(String activationToken, String username) throws Exception {
+
+		String sql = "UPDATE `users` SET `enabled`= 1, `activation_token`= NULL WHERE `activation_token`= ? AND `username` = ?";
+
+		int updatedRows = this.jdbcTemplate.update(sql, new Object[] { activationToken, username });
+
+		if (updatedRows < 1) {
+			throw new RuntimeException("Unable to update user username = " + username);
+		}
+	}
+
 	public EBUser findByUsername(String username) throws EmptyResultDataAccessException {
 		String sqlQuery = "SELECT * FROM users INNER JOIN authorities ON users.username = authorities.fk_username WHERE users.username = ? AND deleted != 1";
 		EBUser user = new EBUser();

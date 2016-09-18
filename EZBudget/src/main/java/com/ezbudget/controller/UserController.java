@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,6 +47,24 @@ public class UserController {
 			return new ResponseEntity<JSONObject>(HttpStatus.FORBIDDEN);
 		}
 		return new ResponseEntity<JSONObject>(rtn, HttpStatus.OK);
+	}
+
+	@RequestMapping(method = { RequestMethod.GET }, value = { "/activate" })
+	@ResponseBody
+	ResponseEntity<JSONObject> activate(@RequestParam(value = "activationToken") String activationToken,
+			@RequestParam(value = "username") String username) {
+		JSONObject rtn = new JSONObject();
+
+		try {
+			authService.activate(activationToken, username);
+			rtn.put("status", "activation successful");
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return new ResponseEntity<JSONObject>(HttpStatus.BAD_REQUEST);
+		}
+
+		return new ResponseEntity<JSONObject>(rtn, HttpStatus.OK);
+
 	}
 
 	@RequestMapping(method = { RequestMethod.POST }, value = { "/logout" })
