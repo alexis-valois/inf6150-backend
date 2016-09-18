@@ -1,10 +1,13 @@
 package com.ezbudget.repository;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +44,17 @@ public class EBUserRepository implements IRepository<EBUser> {
 	@Autowired
 	private HashMap<String, IRepository<?>> repositories;
 
+	public synchronized void activate(String activationToken, String username) throws Exception {
+
+		String sql = "UPDATE `users` SET `enabled`= 1, `activation_token`= NULL WHERE `activation_token`= ? AND `username` = ?";
+
+		int updatedRows = this.jdbcTemplate.update(sql, new Object[] { activationToken, username });
+
+		if (updatedRows < 1) {
+			throw new RuntimeException("Unable to update user username = " + username);
+		}
+	}
+
 	public EBUser findByUsername(String username) throws EmptyResultDataAccessException {
 		String sqlQuery = "SELECT * FROM users INNER JOIN authorities ON users.username = authorities.fk_username WHERE users.username = ? AND deleted != 1";
 		EBUser user = new EBUser();
@@ -50,6 +64,56 @@ public class EBUserRepository implements IRepository<EBUser> {
 			user = new EBUser();
 		}
 		return user;
+
+	}
+
+	public EBUser findBySessionToken(String sessionToken) throws Exception {
+		String sqlQuery = "SELECT * FROM users  INNER JOIN authorities ON users.username = authorities.fk_username WHERE session_token = ? AND deleted != 1";
+		EBUser user = new EBUser();
+		try {
+			user = jdbcTemplate.query(sqlQuery, new EBUserResultSetExtractor(), new Object[] { sessionToken });
+		} catch (EmptyResultDataAccessException e) {
+			user = new EBUser();
+		}
+		return user;
+	}
+
+	public synchronized void performLogout(EBUser user, String sessionToken) {
+		String sql = "UPDATE `users` SET `session_token`= NULL, `last_logout`= ? WHERE `session_token`= ?";
+
+		Timestamp lastLogout = null;
+		if (user.getLastLogout() != null) {
+			lastLogout = new Timestamp(user.getLastLogout().getMillis());
+		}
+		try {
+
+			int updatedRows = this.jdbcTemplate.update(sql, new Object[] { lastLogout, sessionToken });
+
+			if (updatedRows < 1) {
+				throw new RuntimeException("Unable to update username = " + user.getUsername());
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+	}
+
+	public synchronized void performLogin(EBUser user) {
+		String sql = "UPDATE `users` SET `session_token`= ?, `last_login`= ? WHERE `username`= ?";
+
+		Timestamp lastLogin = null;
+		if (user.getLastLogin() != null) {
+			lastLogin = new Timestamp(user.getLastLogin().getMillis());
+		}
+		try {
+
+			int updatedRows = this.jdbcTemplate.update(sql,
+					new Object[] { user.getSessionToken(), lastLogin, user.getUsername() });
+			if (updatedRows < 1) {
+				throw new RuntimeException("Unable to update username = " + user.getUsername());
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
 
 	}
 
@@ -95,8 +159,24 @@ public class EBUserRepository implements IRepository<EBUser> {
 
 	@Override
 	public long create(EBUser newInstance, String sessionToken) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("username", newInstance.getUsername());
+		param.put("first_name", newInstance.getFirstName());
+		param.put("last_name", newInstance.getLastName());
+		param.put("password", newInstance.getPassword());
+		param.put("enabled", false);
+		param.put("activation_token", newInstance.getActivationToken());
+		param.put("date_created", new Timestamp(new DateTime().getMillis()));
+		param.put("deleted", false);
+		param.put("locked", false);
+		param.put("credentials_expired", false);
+		param.put("account_expired", false);
+		param.put("email", newInstance.getEmail());
+		Number generatedId = this.insertTemplate.executeAndReturnKey(param);
+		if (generatedId.longValue() < 1) {
+			throw new RuntimeException("Unable to create new User");
+		}
+		return generatedId.longValue();
 	}
 
 	@Override
