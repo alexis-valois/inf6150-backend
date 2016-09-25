@@ -13,7 +13,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @ComponentScan
 @EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class, FlywayAutoConfiguration.class })
 @EnableConfigurationProperties
-@EnableAspectJAutoProxy
 public class EzBudgetApplication {
 
 	public static void main(String[] args) {
