@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ezbudget.annotation.Access;
 import com.ezbudget.entity.EBUser;
 import com.ezbudget.repository.EBUserRepository;
 
@@ -30,6 +31,7 @@ public class UtilsController {
 	@Autowired
 	private EBUserRepository userRepository;
 
+	@Access(role = "USER")
 	@RequestMapping(method = { RequestMethod.GET }, value = { "/hasher/{rawPassword}" })
 	@ResponseBody
 	JSONObject generateBCryptPassword(@PathVariable("rawPassword") String rawPassword, HttpServletRequest request) {

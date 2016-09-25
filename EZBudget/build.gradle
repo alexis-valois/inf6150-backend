@@ -29,8 +29,8 @@ repositories {
 	maven { url "https://repo.spring.io/milestone" }
 }
 
-
 dependencies {
+	compile group: 'org.aspectj', name: 'aspectjweaver', version: '1.8.9'
 	compile group: 'org.springframework.boot', name: 'spring-boot-dependencies', version: '1.4.0.RELEASE', ext: 'pom'
 	compile "org.springframework.boot:spring-boot-autoconfigure"
 	compile "org.springframework:spring-context"
