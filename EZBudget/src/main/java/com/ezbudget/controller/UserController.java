@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ezbudget.converter.JSONObjectToEntityConverter;
 import com.ezbudget.entity.EBUser;
+import com.ezbudget.exception.UserPrivilegesException;
 import com.ezbudget.service.AuthenticationService;
 import com.ezbudget.web.RestRessourceAssembler;
 
@@ -75,6 +76,9 @@ public class UserController {
 		try {
 			authService.deauthenticate(sessionToken);
 			loggedOut = true;
+		} catch (UserPrivilegesException priv) {
+			logger.error(priv.getMessage());
+			return new ResponseEntity<JSONObject>(HttpStatus.UNAUTHORIZED);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return new ResponseEntity<JSONObject>(HttpStatus.BAD_REQUEST);

@@ -16,7 +16,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import com.ezbudget.annotation.Access;
 import com.ezbudget.entity.EBUser;
+import com.ezbudget.enumtype.RoleType;
 import com.ezbudget.filter.QueryCriteria;
 import com.ezbudget.rowmapper.EBUserResultSetExtractor;
 
@@ -78,6 +80,7 @@ public class EBUserRepository implements IRepository<EBUser> {
 		return user;
 	}
 
+	@Access(role = RoleType.USER)
 	public synchronized void performLogout(EBUser user, String sessionToken) {
 		String sql = "UPDATE `users` SET `session_token`= NULL, `last_logout`= ? WHERE `session_token`= ?";
 
@@ -127,6 +130,7 @@ public class EBUserRepository implements IRepository<EBUser> {
 		return PLURAL_NAME;
 	}
 
+	@Access(role = RoleType.USER)
 	@Override
 	public List<EBUser> findByCriteria(QueryCriteria criteria, String sessionToken) throws Exception {
 		// TODO Auto-generated method stub
@@ -139,6 +143,7 @@ public class EBUserRepository implements IRepository<EBUser> {
 		return null;
 	}
 
+	@Access(role = RoleType.USER)
 	@Override
 	public long count(QueryCriteria criteria, String sessionToken) {
 		// TODO Auto-generated method stub
@@ -151,8 +156,9 @@ public class EBUserRepository implements IRepository<EBUser> {
 		return null;
 	}
 
+	@Access(role = RoleType.ADMIN)
 	@Override
-	public void update(EBUser updated, String sessionToken) throws Exception {
+	public synchronized void update(EBUser updated, String sessionToken) throws Exception {
 		// TODO Auto-generated method stub
 
 	}

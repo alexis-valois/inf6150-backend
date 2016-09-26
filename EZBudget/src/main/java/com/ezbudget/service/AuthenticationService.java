@@ -1,5 +1,6 @@
 package com.ezbudget.service;
 
+import java.util.Set;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
@@ -49,6 +50,17 @@ public class AuthenticationService {
 		authRepository.register(authority);
 
 		mailService.sendActivationMail(newUser);
+	}
+
+	public EBUser getAuthenticatedUserInfo(String sessionToken) throws Exception {
+		EBUser user = userRepository.findBySessionToken(sessionToken);
+		user.setPassword(null);
+		user.setSessionToken(null);
+		return user;
+	}
+
+	public Set<EBAuthority> getUserRoles(String sessionToken) throws Exception {
+		return getAuthenticatedUserInfo(sessionToken).getAuthorities();
 	}
 
 	public EBUser authenticate(String username, String password) throws Exception {
