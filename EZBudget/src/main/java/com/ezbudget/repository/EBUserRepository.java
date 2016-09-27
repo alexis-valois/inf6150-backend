@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -80,7 +81,6 @@ public class EBUserRepository implements IRepository<EBUser> {
 		return user;
 	}
 
-	@Access(role = RoleType.USER)
 	public synchronized void performLogout(EBUser user, String sessionToken) {
 		String sql = "UPDATE `users` SET `session_token`= NULL, `last_logout`= ? WHERE `session_token`= ?";
 
@@ -95,7 +95,7 @@ public class EBUserRepository implements IRepository<EBUser> {
 			if (updatedRows < 1) {
 				throw new RuntimeException("Unable to update username = " + user.getUsername());
 			}
-		} catch (Exception e) {
+		} catch (DataAccessException e) {
 			logger.error(e.getMessage());
 		}
 	}
@@ -130,7 +130,6 @@ public class EBUserRepository implements IRepository<EBUser> {
 		return PLURAL_NAME;
 	}
 
-	@Access(role = RoleType.USER)
 	@Override
 	public List<EBUser> findByCriteria(QueryCriteria criteria, String sessionToken) throws Exception {
 		// TODO Auto-generated method stub
@@ -143,7 +142,6 @@ public class EBUserRepository implements IRepository<EBUser> {
 		return null;
 	}
 
-	@Access(role = RoleType.USER)
 	@Override
 	public long count(QueryCriteria criteria, String sessionToken) {
 		// TODO Auto-generated method stub
@@ -156,7 +154,6 @@ public class EBUserRepository implements IRepository<EBUser> {
 		return null;
 	}
 
-	@Access(role = RoleType.ADMIN)
 	@Override
 	public synchronized void update(EBUser updated, String sessionToken) throws Exception {
 		// TODO Auto-generated method stub

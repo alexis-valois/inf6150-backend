@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ezbudget.annotation.Access;
 import com.ezbudget.converter.JSONObjectToEntityConverter;
 import com.ezbudget.entity.EBUser;
+import com.ezbudget.enumtype.RoleType;
 import com.ezbudget.exception.UserPrivilegesException;
 import com.ezbudget.service.AuthenticationService;
 import com.ezbudget.web.RestRessourceAssembler;
@@ -68,6 +70,7 @@ public class UserController {
 
 	}
 
+	@Access(role = RoleType.USER)
 	@RequestMapping(method = { RequestMethod.POST }, value = { "/logout" })
 	@ResponseBody
 	ResponseEntity<JSONObject> logout(@RequestHeader(required = false, value = "sessionToken") String sessionToken) {

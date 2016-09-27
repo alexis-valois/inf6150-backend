@@ -38,10 +38,9 @@ public class AccessAspect {
 	public void atExecution() {
 	}
 
-	@Around("annotationPointCutDefinition(access) && atExecution() && args(sessionToken,..)")
-	public Object accessCheck(ProceedingJoinPoint joinPoint, Access access, String sessionToken) {
+	@Around("annotationPointCutDefinition(access) && atExecution() && args(*,sessionToken,..)")
+	public Object accessCheck(ProceedingJoinPoint joinPoint, Access access, String sessionToken) throws Throwable {
 		Object rtn = null;
-		try {
 			if (securityEnabled) {
 				logger.info("Security is enabled");
 				RoleType requiredRole = access.role();
@@ -71,9 +70,6 @@ public class AccessAspect {
 				}
 
 			}
-		} catch (Throwable e) {
-			logger.debug(e.getMessage());
-		}
 		return rtn;
 	}
 
