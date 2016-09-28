@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 import com.ezbudget.enumtype.RoleType;
 
-@Target({ ElementType.METHOD })
+@Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Access {
 	RoleType role();

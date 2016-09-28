@@ -17,9 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import com.ezbudget.annotation.Access;
 import com.ezbudget.entity.EBUser;
-import com.ezbudget.enumtype.RoleType;
 import com.ezbudget.filter.QueryCriteria;
 import com.ezbudget.rowmapper.EBUserResultSetExtractor;
 
@@ -28,24 +26,21 @@ public class EBUserRepository implements IRepository<EBUser> {
 
 	private static Logger logger = LoggerFactory.getLogger(EBUserRepository.class);
 
-	private static final String TABLE_NAME = "users";
 	private String SINGULAR_NAME = "user";
 	private String PLURAL_NAME = "users";
 
 	@PostConstruct
 	private void registerRepository() {
-		repositories.put(TABLE_NAME, this);
-		this.insertTemplate = new SimpleJdbcInsert(this.jdbcTemplate);
-		this.insertTemplate.withTableName(TABLE_NAME).usingGeneratedKeyColumns("user_id");
+		/**
+		 * No repository registration to prevent EntityController from being
+		 * used as a potential attack vector on UserData
+		 */
 	}
 
 	private SimpleJdbcInsert insertTemplate;
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
-
-	@Autowired
-	private HashMap<String, IRepository<?>> repositories;
 
 	public synchronized void activate(String activationToken, String username) throws Exception {
 

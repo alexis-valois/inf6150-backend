@@ -73,7 +73,7 @@ public class UserController {
 	@Access(role = RoleType.USER)
 	@RequestMapping(method = { RequestMethod.POST }, value = { "/logout" })
 	@ResponseBody
-	ResponseEntity<JSONObject> logout(@RequestHeader(required = false, value = "sessionToken") String sessionToken) {
+	ResponseEntity<JSONObject> logout(@RequestHeader(value = "sessionToken") String sessionToken) {
 		JSONObject rtn = new JSONObject();
 		boolean loggedOut = false;
 		try {

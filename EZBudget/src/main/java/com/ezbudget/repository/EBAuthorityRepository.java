@@ -5,10 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.validation.Validator;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -24,21 +21,8 @@ public class EBAuthorityRepository implements IRepository<EBAuthority> {
 
 	private SimpleJdbcInsert insertTemplate;
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
-	@Autowired
-	private HashMap<String, IRepository<?>> repositories;
-
-	@Autowired
-	private Validator validator;
-
 	@PostConstruct
 	private void registerRepository() {
-		repositories.put(TABLE_NAME, this);
-		this.insertTemplate = new SimpleJdbcInsert(this.jdbcTemplate);
-		this.insertTemplate.withTableName(TABLE_NAME).usingGeneratedKeyColumns("authorities_id");
-		;
 	}
 
 	public synchronized void register(EBAuthority authority) throws Exception {
