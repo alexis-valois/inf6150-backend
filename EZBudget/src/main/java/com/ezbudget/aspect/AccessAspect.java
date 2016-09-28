@@ -30,24 +30,23 @@ public class AccessAspect {
 	@Value("${security.enabled}")
 	private boolean securityEnabled;
 
-	@Pointcut("within(@com.ezbudget.annotation.Access *)")
-	public void beanAnnotatedWithAccess() {
+	@Pointcut("execution(* *(..)) && args(sessionToken,..)")
+	public void atExecutionWithSessionToken(String sessionToken) {
 	}
 
-	@Pointcut("@annotation(access)")
-	public void annotationPointCutDefinition(Access access) {
+	@Around("@annotation(access) && atExecutionWithSessionToken(sessionToken)")
+	public Object methodLevelAccessCheck(ProceedingJoinPoint joinPoint, Access access, String sessionToken)
+			throws Throwable {
+		return accessCheck(joinPoint, access, sessionToken);
 	}
 
-	@Pointcut("execution(* *(..))")
-	public void atExecution() {
+	@Around("@within(access) && atExecutionWithSessionToken(sessionToken)")
+	public Object classLevelAccessCheck(ProceedingJoinPoint joinPoint, Access access, String sessionToken)
+			throws Throwable {
+		return accessCheck(joinPoint, access, sessionToken);
 	}
 
-	@Pointcut("beanAnnotatedWithAccess() && atExecution()")
-	public void beanAnnotatedWithMonitor() {
-	}
-
-	@Around("annotationPointCutDefinition(access) && atExecution() && args(*,sessionToken,..)")
-	public Object accessCheck(ProceedingJoinPoint joinPoint, Access access, String sessionToken) throws Throwable {
+	private Object accessCheck(ProceedingJoinPoint joinPoint, Access access, String sessionToken) throws Throwable {
 		Object rtn = null;
 		if (securityEnabled) {
 			logger.info("Security is enabled");

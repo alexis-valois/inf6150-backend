@@ -52,8 +52,8 @@ public class EntityController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(method = { RequestMethod.GET }, value = { "/{entityName}" })
 	@ResponseBody
-	JSONArray findAll(@PathVariable("entityName") String entityName,
-			@RequestHeader(value = "sessionToken") String sessionToken, HttpServletRequest request) {
+	JSONArray findAll(@RequestHeader(value = "sessionToken") String sessionToken,
+			@PathVariable("entityName") String entityName, HttpServletRequest request) {
 		QueryCriteria criteria = httpUtils.getQueryCriteria(request);
 		JSONArray rtn = new JSONArray();
 		if (repositories.containsKey(entityName)) {
@@ -71,8 +71,8 @@ public class EntityController {
 
 	@RequestMapping(method = { RequestMethod.GET }, value = { "/{entityName}/{id}" })
 	@ResponseBody
-	JSONObject findOne(@PathVariable("entityName") String entityName,
-			@RequestHeader(value = "sessionToken") String sessionToken, @PathVariable("id") int entityId) {
+	JSONObject findOne(@RequestHeader(value = "sessionToken") String sessionToken,
+			@PathVariable("entityName") String entityName, @PathVariable("id") int entityId) {
 		JSONObject rtn = new JSONObject();
 		try {
 			IEntity entity = queryService.getById(entityName, entityId, sessionToken);
@@ -86,7 +86,7 @@ public class EntityController {
 	@RequestMapping(method = { RequestMethod.PUT }, value = { "/{entityName}/{id}" }, headers = {
 			"content-type!=multipart/form-data" })
 	@ResponseBody
-	JSONObject update(@RequestBody JSONObject json, @RequestHeader(value = "sessionToken") String sessionToken,
+	JSONObject update(@RequestHeader(value = "sessionToken") String sessionToken, @RequestBody JSONObject json,
 			@PathVariable("entityName") String entityName, @PathVariable("id") int id) {
 		IEntity entity = null;
 		try {
@@ -108,7 +108,7 @@ public class EntityController {
 	@RequestMapping(method = { RequestMethod.POST }, value = { "/{entityName}" }, headers = {
 			"content-type!=multipart/form-data" })
 	@ResponseBody
-	JSONObject create(@RequestBody JSONObject json, @RequestHeader(value = "sessionToken") String sessionToken,
+	JSONObject create(@RequestHeader(value = "sessionToken") String sessionToken, @RequestBody JSONObject json,
 			@PathVariable("entityName") String entityName) {
 
 		IEntity entity = null;
@@ -129,8 +129,8 @@ public class EntityController {
 
 	@RequestMapping(method = { RequestMethod.GET }, value = { "/{entityName}/count" })
 	@ResponseBody
-	JSONObject count(@PathVariable("entityName") String entityName,
-			@RequestHeader(value = "sessionToken") String sessionToken, HttpServletRequest request) {
+	JSONObject count(@RequestHeader(value = "sessionToken") String sessionToken,
+			@PathVariable("entityName") String entityName, HttpServletRequest request) {
 		QueryCriteria criteria = httpUtils.getQueryCriteria(request);
 		JSONObject rtn = new JSONObject();
 		if (repositories.containsKey(entityName)) {
@@ -148,8 +148,8 @@ public class EntityController {
 
 	@RequestMapping(method = { RequestMethod.DELETE }, value = { "/{entityName}/{id}" })
 	@ResponseBody
-	JSONObject delete(@PathVariable("entityName") String entityName,
-			@RequestHeader(value = "sessionToken") String sessionToken, @PathVariable("id") int entityId) {
+	JSONObject delete(@RequestHeader(value = "sessionToken") String sessionToken,
+			@PathVariable("entityName") String entityName, @PathVariable("id") int entityId) {
 		JSONObject json = new JSONObject();
 
 		try {
