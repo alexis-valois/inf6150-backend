@@ -3,6 +3,7 @@ CREATE TABLE `accounts` (
   `type` VARCHAR(45) NOT NULL,
   `name` VARCHAR(255) NOT NULL,
   `userId` INT NULL,
+  `deleted` BIT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   INDEX `fk_user_id_idx` (`userId` ASC),

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.ezbudget.entity.EBAuthority;
 import com.ezbudget.entity.EBUser;
 import com.ezbudget.enumtype.RoleType;
-import com.ezbudget.filter.QueryCriteria;
 import com.ezbudget.repository.EBAuthorityRepository;
 import com.ezbudget.repository.EBUserRepository;
 
@@ -74,8 +73,6 @@ public class AuthenticationService {
 			userRepository.performLogin(user);
 			user.setPassword(null);
 			user.setActivationToken(null);
-			QueryCriteria criteria = new QueryCriteria();
-			criteria.andEquals("fk_user_id", Long.toString(user.getId()));
 			return user;
 		} else {
 			throw new RuntimeException("Wrong password.");

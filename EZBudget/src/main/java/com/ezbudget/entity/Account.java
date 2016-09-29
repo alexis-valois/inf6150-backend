@@ -4,24 +4,24 @@ import com.ezbudget.enumtype.AccountType;
 
 public class Account implements IEntity {
 
-	private int id;
+	private long id;
 	private AccountType type;
 	private String accountName;
-	private int userId;
+	private long userId;
 
-	public int getUserId() {
+	public long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(int userId) {
+	public void setUserId(long userId) {
 		this.userId = userId;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

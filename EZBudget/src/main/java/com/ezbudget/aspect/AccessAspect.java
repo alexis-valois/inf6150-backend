@@ -47,8 +47,8 @@ public class AccessAspect {
 	}
 
 	private Object accessCheck(ProceedingJoinPoint joinPoint, Access access, String sessionToken) throws Throwable {
-		Object rtn = null;
 		if (securityEnabled) {
+			Object rtn = null;
 			logger.info("Security is enabled");
 			RoleType requiredRole = access.role();
 
@@ -77,7 +77,7 @@ public class AccessAspect {
 			}
 
 		}
-		return rtn;
+		return joinPoint.proceed();
 	}
 
 	private void handleUnauthorizedAccess() {
