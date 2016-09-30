@@ -4,6 +4,7 @@ CREATE TABLE `accounts` (
   `name` VARCHAR(255) NOT NULL,
   `userId` INT NULL,
   `deleted` BIT(1) NOT NULL DEFAULT 0,
+  `created` DATETIME NULL DEFAULT NOW(),
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   INDEX `fk_user_id_idx` (`userId` ASC),

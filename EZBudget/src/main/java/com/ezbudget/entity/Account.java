@@ -1,5 +1,7 @@
 package com.ezbudget.entity;
 
+import org.joda.time.DateTime;
+
 import com.ezbudget.enumtype.AccountType;
 
 public class Account implements IEntity {
@@ -7,7 +9,16 @@ public class Account implements IEntity {
 	private long id;
 	private AccountType type;
 	private String accountName;
+	private DateTime created;
 	private long userId;
+
+	public DateTime getCreated() {
+		return created;
+	}
+
+	public void setCreated(DateTime created) {
+		this.created = created;
+	}
 
 	public long getUserId() {
 		return userId;
