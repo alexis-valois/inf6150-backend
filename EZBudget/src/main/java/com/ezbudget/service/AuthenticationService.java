@@ -1,5 +1,6 @@
 package com.ezbudget.service;
 
+import java.util.Set;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.ezbudget.entity.EBAuthority;
 import com.ezbudget.entity.EBUser;
 import com.ezbudget.enumtype.RoleType;
-import com.ezbudget.filter.QueryCriteria;
 import com.ezbudget.repository.EBAuthorityRepository;
 import com.ezbudget.repository.EBUserRepository;
 
@@ -51,6 +51,17 @@ public class AuthenticationService {
 		mailService.sendActivationMail(newUser);
 	}
 
+	public EBUser getAuthenticatedUserInfo(String sessionToken) throws Exception {
+		EBUser user = userRepository.findBySessionToken(sessionToken);
+		user.setPassword(null);
+		user.setSessionToken(null);
+		return user;
+	}
+
+	public Set<EBAuthority> getUserRoles(String sessionToken) throws Exception {
+		return getAuthenticatedUserInfo(sessionToken).getAuthorities();
+	}
+
 	public EBUser authenticate(String username, String password) throws Exception {
 		EBUser user = userRepository.findByUsername(username);
 		String sessionToken = "";
@@ -62,8 +73,6 @@ public class AuthenticationService {
 			userRepository.performLogin(user);
 			user.setPassword(null);
 			user.setActivationToken(null);
-			QueryCriteria criteria = new QueryCriteria();
-			criteria.andEquals("fk_user_id", Long.toString(user.getId()));
 			return user;
 		} else {
 			throw new RuntimeException("Wrong password.");

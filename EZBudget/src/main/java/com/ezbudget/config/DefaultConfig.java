@@ -7,7 +7,6 @@ import javax.validation.ValidatorFactory;
 import org.joda.time.DateTime;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
 
 import com.ezbudget.serializer.DateTimeTypeSerializer;
 import com.google.gson.Gson;

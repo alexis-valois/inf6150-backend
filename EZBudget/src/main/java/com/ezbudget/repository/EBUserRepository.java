@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -25,24 +26,21 @@ public class EBUserRepository implements IRepository<EBUser> {
 
 	private static Logger logger = LoggerFactory.getLogger(EBUserRepository.class);
 
-	private static final String TABLE_NAME = "users";
 	private String SINGULAR_NAME = "user";
 	private String PLURAL_NAME = "users";
 
 	@PostConstruct
 	private void registerRepository() {
-		repositories.put(TABLE_NAME, this);
-		this.insertTemplate = new SimpleJdbcInsert(this.jdbcTemplate);
-		this.insertTemplate.withTableName(TABLE_NAME).usingGeneratedKeyColumns("user_id");
+		/**
+		 * No repository registration to prevent EntityController from being
+		 * used as a potential attack vector on UserData
+		 */
 	}
 
 	private SimpleJdbcInsert insertTemplate;
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
-
-	@Autowired
-	private HashMap<String, IRepository<?>> repositories;
 
 	public synchronized void activate(String activationToken, String username) throws Exception {
 
@@ -92,7 +90,7 @@ public class EBUserRepository implements IRepository<EBUser> {
 			if (updatedRows < 1) {
 				throw new RuntimeException("Unable to update username = " + user.getUsername());
 			}
-		} catch (Exception e) {
+		} catch (DataAccessException e) {
 			logger.error(e.getMessage());
 		}
 	}
@@ -152,7 +150,7 @@ public class EBUserRepository implements IRepository<EBUser> {
 	}
 
 	@Override
-	public void update(EBUser updated, String sessionToken) throws Exception {
+	public synchronized void update(EBUser updated, String sessionToken) throws Exception {
 		// TODO Auto-generated method stub
 
 	}

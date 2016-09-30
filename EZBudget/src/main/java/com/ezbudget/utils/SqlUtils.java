@@ -23,7 +23,8 @@ public class SqlUtils {
 		if (!deletableEntity) {
 			sb.delete(sb.lastIndexOf("AND"), sb.length());
 		} else {
-			sb.append("deleted != 1");
+			sb.append(entityName);
+			sb.append(".deleted != 1");
 		}
 
 		sb.append(getOrderBySqlQuery(entityName, sortParams)).append(getLimitSqlQuery(size, index));
