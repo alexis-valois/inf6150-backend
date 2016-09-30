@@ -7,7 +7,7 @@
 
 ## Getting Started
 ### Portion MySQL
-1. Cloner le projet avec SourceTree via l'interface Bitbucket (Clone / Clone in SourceTree)
+1. Cloner le projet avec SourceTree : Fichier / Cloner-Nouveau / URL Git / Cloner
 2. Ouvrir MySQL Workbench
 3. Choisir Local Instance
 4. Dans l'onglet Schema, faire clic-droit/create schema
@@ -16,7 +16,7 @@
 7. Dans l'onglet Management, cliquer sur Users and priviledges
 8. Cliquer sur Add Account. Pour Login name : **ezbudget**, password : **ezbudget** et faire Apply
 9. Dans la même fenêtre, naviguer dans l'onglet Schema Previldges et cliquer sur Add Entry
-10. Sélectionner l'option Selected Schema et choisir le schema movietracker de la liste déroulante et faire OK
+10. Sélectionner l'option Selected Schema et choisir le schema ezbudget de la liste déroulante et faire OK
 11. Toujours dans la même fenêtre, appuyer sur Select All et faire Apply.
 
 ### Portion Spring Tool Suite
