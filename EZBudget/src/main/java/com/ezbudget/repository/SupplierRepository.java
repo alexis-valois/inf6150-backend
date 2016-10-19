@@ -64,7 +64,7 @@ public class SupplierRepository implements IRepository<Supplier> {
 
 	@Override
 	public List<Supplier> findAll(String sessionToken) throws Exception {
-		String sqlQuery = "SELECT * FROM suppliers su INNER JOIN users u ON su.userId = u.user_id HAVING u.session_token = ?";
+		String sqlQuery = "SELECT * FROM suppliers su INNER JOIN users u ON su.userId = u.user_id HAVING u.session_token = ?AND su.deleted != 1";
 		return jdbcTemplate.query(sqlQuery, new SupplierRowMapper(), new Object[] { sessionToken });
 	}
 
