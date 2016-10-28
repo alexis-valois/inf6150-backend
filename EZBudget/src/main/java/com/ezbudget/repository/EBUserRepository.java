@@ -26,6 +26,7 @@ public class EBUserRepository implements IRepository<EBUser> {
 
 	private static Logger logger = LoggerFactory.getLogger(EBUserRepository.class);
 
+	private static final String TABLE_NAME = "users";
 	private String SINGULAR_NAME = "user";
 	private String PLURAL_NAME = "users";
 
@@ -35,6 +36,8 @@ public class EBUserRepository implements IRepository<EBUser> {
 		 * No repository registration to prevent EntityController from being
 		 * used as a potential attack vector on UserData
 		 */
+		this.insertTemplate = new SimpleJdbcInsert(this.jdbcTemplate);
+		this.insertTemplate.withTableName(TABLE_NAME).usingGeneratedKeyColumns("user_id");
 	}
 
 	private SimpleJdbcInsert insertTemplate;

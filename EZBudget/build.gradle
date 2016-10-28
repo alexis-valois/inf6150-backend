@@ -56,6 +56,7 @@ dependencies {
     compile('org.flywaydb:flyway-core')
     compile("org.json:json")
     compile("joda-time:joda-time")
+    compile group: 'org.joda', name: 'joda-money', version: '0.6'
     compile group: 'commons-io', name: 'commons-io', version: '2.5'
     compile group: 'com.google.guava', name: 'guava', version: '19.0'
     compile 'com.google.code.gson:gson'
