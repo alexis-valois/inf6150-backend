@@ -42,17 +42,17 @@ public class EBUser implements IEntity {
 	private boolean accountExpired;
 
 	private String sessionToken;
-	
+
 	private Set<EBAuthority> authorities = new HashSet<EBAuthority>();
 
 	public Set<EBAuthority> getAuthorities() {
 		return authorities;
 	}
-	
+
 	public void addAuthority(EBAuthority authority) {
 		this.authorities.add(authority);
 	}
-	
+
 	public String getEmail() {
 		return email;
 	}

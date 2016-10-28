@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -23,7 +25,16 @@ public class EBAuthorityRepository implements IRepository<EBAuthority> {
 
 	@PostConstruct
 	private void registerRepository() {
+		/**
+		 * No repository registration to prevent EntityController from being
+		 * used as a potential attack vector on UserData
+		 */
+		this.insertTemplate = new SimpleJdbcInsert(this.jdbcTemplate);
+		this.insertTemplate.withTableName(TABLE_NAME).usingGeneratedKeyColumns("authorities_id");
 	}
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	public synchronized void register(EBAuthority authority) throws Exception {
 		Map<String, Object> param = new HashMap<String, Object>();

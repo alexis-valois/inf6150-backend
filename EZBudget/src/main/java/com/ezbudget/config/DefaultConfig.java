@@ -22,6 +22,7 @@ public class DefaultConfig {
 		GsonBuilder gson = new GsonBuilder();
 		gson.registerTypeAdapter(DateTime.class, new DateTimeTypeSerializer());
 		gson.registerTypeAdapter(Money.class, new MoneyTypeSerializer());
+		gson.excludeFieldsWithModifiers(java.lang.reflect.Modifier.TRANSIENT);
 		return gson.create();
 	}
 
