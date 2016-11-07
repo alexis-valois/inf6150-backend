@@ -1,5 +1,7 @@
 package com.ezbudget.repository;
 
+
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,10 +10,11 @@ import javax.annotation.PostConstruct;
 
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-
+import org.springframework.stereotype.Repository;
 
 import com.ezbudget.entity.Revenue;
 
@@ -22,6 +25,7 @@ import com.ezbudget.rowmapper.RevenuesRowMapper;
 import com.ezbudget.service.AuthenticationService;
 import com.ezbudget.utils.SqlUtils;
 
+@Repository
 public class RevenuesRepository implements IRepository<Revenue> {
 	
 	
@@ -47,7 +51,7 @@ public class RevenuesRepository implements IRepository<Revenue> {
 	private void registerRepository() {
 		repositories.put(TABLE_NAME, this);
 		this.insertTemplate = new SimpleJdbcInsert(this.jdbcTemplate);
-		this.insertTemplate.withTableName(TABLE_NAME).usingGeneratedKeyColumns("revenue_id");
+		this.insertTemplate.withTableName(TABLE_NAME).usingGeneratedKeyColumns("id");
 	}
 
 	@Override
@@ -131,6 +135,8 @@ public class RevenuesRepository implements IRepository<Revenue> {
 		param.put("userId", authService.getAuthenticatedUserInfo(sessionToken).getId()); 
 		param.put("accountId", newInstance.getAccountId());
 		param.put("deleted", false);
+		param.put("starting", new Timestamp(new DateTime().getMillis()));
+		param.put("ending", newInstance.getEnding());
 		Number generatedId = this.insertTemplate.executeAndReturnKey(param);
 		if (generatedId.longValue() < 1) {
 			throw new RuntimeException("Unable to create new Account");

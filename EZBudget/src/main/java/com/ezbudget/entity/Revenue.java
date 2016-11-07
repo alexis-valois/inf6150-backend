@@ -3,7 +3,7 @@ package com.ezbudget.entity;
 import org.joda.money.Money;
 import org.joda.time.DateTime;
 
-public class Revenue {
+public class Revenue implements IEntity {
 	
 	
 	 private long id;
@@ -15,8 +15,15 @@ public class Revenue {
 	 private DateTime starting;
 	 private DateTime ending;
 	 private Boolean deleted;
+	 private String currency;
 	 
 	 
+	public String getCurrency() {
+		return currency;
+	}
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
 	public long getId() {
 		return id;
 	}
@@ -72,6 +79,11 @@ public class Revenue {
 		
     public void setDeleted(Boolean deleted) {
 			this.deleted = deleted;
+	}
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	 
 	

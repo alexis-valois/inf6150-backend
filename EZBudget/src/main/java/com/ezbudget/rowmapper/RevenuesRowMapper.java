@@ -22,6 +22,7 @@ public class RevenuesRowMapper implements RowMapper<Revenue>{
 		revenue.setAmount(Money.of(currency, rs.getBigDecimal("amount")));
 		revenue.setCreated(new DateTime(rs.getTimestamp("created"))); 
 		revenue.setStarting(new DateTime(rs.getTimestamp("starting"))); 
+		revenue.setEnding(new DateTime(rs.getTimestamp("ending"))); 
 		revenue.setUserId(rs.getLong("userId"));
 		revenue.setAccountId(rs.getLong("accountId"));
 		return revenue;
