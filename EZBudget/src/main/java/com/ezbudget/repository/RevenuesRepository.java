@@ -1,6 +1,7 @@
 package com.ezbudget.repository;
 
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -111,9 +112,12 @@ public class RevenuesRepository implements IRepository<Revenue> {
 		
 		long id = updated.getId();		
 		Money amount = updated.getAmount();
+		String frequency=updated.getFrequency();
+		DateTime rev_starting = updated.getRevStarting();
+		DateTime rev_ending = updated.getRevEnding();
 		CurrencyUnit currency = amount.getCurrencyUnit();
 		
-		String sql = "UPDATE " + TABLE_NAME + " SET amount = ?, " + "currency = ?"
+		String sql = "UPDATE " + TABLE_NAME + " SET amount = ?, " + "frequency = ?,"+ "rev_starting = ?,"+ "rev_ending = ?," + "currency = ?"
 				+ "WHERE id = ? AND deleted != 1 AND userId = (" + "SELECT user_id FROM users WHERE session_token = ?"
 				+ ")";
 		int updatedRows = this.jdbcTemplate.update(sql, new Object[] {  amount.getAmount(),
