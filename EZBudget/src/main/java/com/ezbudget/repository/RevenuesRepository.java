@@ -135,11 +135,12 @@ public class RevenuesRepository implements IRepository<Revenue> {
 		param.put("userId", authService.getAuthenticatedUserInfo(sessionToken).getId()); 
 		param.put("accountId", newInstance.getAccountId());
 		param.put("deleted", false);
-		param.put("starting", new Timestamp(new DateTime().getMillis()));
-		param.put("ending", newInstance.getEnding());
+		param.put("rev_starting", new Timestamp(newInstance.getRevStarting().getMillis()));
+		param.put("rev_ending", new Timestamp(newInstance.getRevEnding().getMillis()));
+		
 		Number generatedId = this.insertTemplate.executeAndReturnKey(param);
 		if (generatedId.longValue() < 1) {
-			throw new RuntimeException("Unable to create new Account");
+			throw new RuntimeException("Unable to create new Revenu");
 		}
 		return generatedId.longValue();
 	}

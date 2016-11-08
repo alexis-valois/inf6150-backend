@@ -1,0 +1,3 @@
+ALTER TABLE `ezbudget`.`revenues` 
+CHANGE COLUMN `starting` `rev_starting` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
+CHANGE COLUMN `ending` `rev_ending` DATETIME NULL DEFAULT NULL ;

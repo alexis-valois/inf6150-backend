@@ -21,8 +21,8 @@ public class RevenuesRowMapper implements RowMapper<Revenue>{
 		revenue.setFrequency(rs.getString("frequency")); 
 		revenue.setAmount(Money.of(currency, rs.getBigDecimal("amount")));
 		revenue.setCreated(new DateTime(rs.getTimestamp("created"))); 
-		revenue.setStarting(new DateTime(rs.getTimestamp("starting"))); 
-		revenue.setEnding(new DateTime(rs.getTimestamp("ending"))); 
+		revenue.setRevStarting(new DateTime(rs.getTimestamp("rev_starting"))); 
+		revenue.setRevEnding(new DateTime(rs.getTimestamp("rev_ending"))); 
 		revenue.setUserId(rs.getLong("userId"));
 		revenue.setAccountId(rs.getLong("accountId"));
 		return revenue;

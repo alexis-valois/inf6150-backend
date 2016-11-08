@@ -12,18 +12,28 @@ public class Revenue implements IEntity {
 	 private Money amount;
 	 private long accountId;
 	 private String frequency;
-	 private DateTime starting;
-	 private DateTime ending;
-	 private Boolean deleted;
-	 private String currency;
+	 private DateTime revStarting;
+	 private DateTime revEnding;
+	 private boolean deleted;
 	 
 	 
-	public String getCurrency() {
-		return currency;
+	 
+	
+	
+	
+	public DateTime getRevStarting() {
+		return revStarting;
 	}
-	public void setCurrency(String currency) {
-		this.currency = currency;
+	public void setRevStarting(DateTime revStarting) {
+		this.revStarting = revStarting;
 	}
+	public DateTime getRevEnding() {
+		return revEnding;
+	}
+	public void setRevEnding(DateTime revEnding) {
+		this.revEnding = revEnding;
+	}
+	
 	public long getId() {
 		return id;
 	}
@@ -60,24 +70,13 @@ public class Revenue implements IEntity {
 	public void setFrequency(String frequency) {
 		this.frequency = frequency;
 	}
-	public DateTime getStarting() {
-		return starting;
-	}
-	public void setStarting(DateTime starting) {
-		this.starting = starting;
-	}
-	public DateTime getEnding() {
-		return ending;
-	}
-	public void setEnding(DateTime ending) {
-		this.ending = ending;
-	}
+	
 	 
-    public Boolean getDeleted() {
+    public boolean getDeleted() {
 			return deleted;
 	}
 		
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(boolean deleted) {
 			this.deleted = deleted;
 	}
 	@Override
