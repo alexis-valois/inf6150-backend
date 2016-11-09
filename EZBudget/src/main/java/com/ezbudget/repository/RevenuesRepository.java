@@ -113,14 +113,14 @@ public class RevenuesRepository implements IRepository<Revenue> {
 		long id = updated.getId();		
 		Money amount = updated.getAmount();
 		String frequency=updated.getFrequency();
-		DateTime rev_starting = updated.getRevStarting();
-		DateTime rev_ending = updated.getRevEnding();
+		Timestamp rev_starting = new Timestamp(updated.getRevStarting().getMillis());
+		Timestamp rev_ending = new Timestamp(updated.getRevEnding().getMillis());
 		CurrencyUnit currency = amount.getCurrencyUnit();
 		
-		String sql = "UPDATE " + TABLE_NAME + " SET amount = ?, " + "frequency = ?,"+ "rev_starting = ?,"+ "rev_ending = ?," + "currency = ?"
+		String sql = "UPDATE " + TABLE_NAME + " SET amount = ?, " + "frequency = ?,"+ "rev_starting = ?,"+ "rev_ending = ?," + "currency = ? "
 				+ "WHERE id = ? AND deleted != 1 AND userId = (" + "SELECT user_id FROM users WHERE session_token = ?"
 				+ ")";
-		int updatedRows = this.jdbcTemplate.update(sql, new Object[] {  amount.getAmount(),
+		int updatedRows = this.jdbcTemplate.update(sql, new Object[] {  amount.getAmount(),frequency,rev_starting,rev_ending,
 				currency.getCurrencyCode(), id, sessionToken });
 
 		if (updatedRows < 1) {
