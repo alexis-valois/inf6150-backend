@@ -1,7 +1,5 @@
 package com.ezbudget.repository;
 
-
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -11,27 +9,21 @@ import javax.annotation.PostConstruct;
 
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import com.ezbudget.entity.Revenue;
-
 import com.ezbudget.filter.Filter;
 import com.ezbudget.filter.QueryCriteria;
-
 import com.ezbudget.rowmapper.RevenuesRowMapper;
 import com.ezbudget.service.AuthenticationService;
 import com.ezbudget.utils.SqlUtils;
 
 @Repository
 public class RevenuesRepository implements IRepository<Revenue> {
-	
-	
-	
-	
+
 	private static final String TABLE_NAME = "revenues";
 	private String SINGULAR_NAME = "revenue";
 	private String PLURAL_NAME = "revenues";
@@ -109,19 +101,19 @@ public class RevenuesRepository implements IRepository<Revenue> {
 
 	@Override
 	public synchronized void update(Revenue updated, String sessionToken) throws Exception {
-		
-		long id = updated.getId();		
+
+		long id = updated.getId();
 		Money amount = updated.getAmount();
-		String frequency=updated.getFrequency();
+		String frequency = updated.getFrequency();
 		Timestamp rev_starting = new Timestamp(updated.getRevStarting().getMillis());
 		Timestamp rev_ending = new Timestamp(updated.getRevEnding().getMillis());
 		CurrencyUnit currency = amount.getCurrencyUnit();
-		
-		String sql = "UPDATE " + TABLE_NAME + " SET amount = ?, " + "frequency = ?,"+ "rev_starting = ?,"+ "rev_ending = ?," + "currency = ? "
-				+ "WHERE id = ? AND deleted != 1 AND userId = (" + "SELECT user_id FROM users WHERE session_token = ?"
-				+ ")";
-		int updatedRows = this.jdbcTemplate.update(sql, new Object[] {  amount.getAmount(),frequency,rev_starting,rev_ending,
-				currency.getCurrencyCode(), id, sessionToken });
+
+		String sql = "UPDATE " + TABLE_NAME + " SET amount = ?, " + "frequency = ?," + "rev_starting = ?,"
+				+ "rev_ending = ?," + "currency = ? " + "WHERE id = ? AND deleted != 1 AND userId = ("
+				+ "SELECT user_id FROM users WHERE session_token = ?" + ")";
+		int updatedRows = this.jdbcTemplate.update(sql, new Object[] { amount.getAmount(), frequency, rev_starting,
+				rev_ending, currency.getCurrencyCode(), id, sessionToken });
 
 		if (updatedRows < 1) {
 			throw new RuntimeException("Unable to update id = " + id);
@@ -132,16 +124,16 @@ public class RevenuesRepository implements IRepository<Revenue> {
 	@Override
 	public synchronized long create(Revenue newInstance, String sessionToken) throws Exception {
 		Map<String, Object> param = new HashMap<String, Object>();
-		
-		param.put("frequency", newInstance.getFrequency().toString());	
-		param.put("amount", newInstance.getAmount().getAmount()); 
+
+		param.put("frequency", newInstance.getFrequency().toString());
+		param.put("amount", newInstance.getAmount().getAmount());
 		param.put("currency", newInstance.getAmount().getCurrencyUnit().getCurrencyCode());
-		param.put("userId", authService.getAuthenticatedUserInfo(sessionToken).getId()); 
+		param.put("userId", authService.getAuthenticatedUserInfo(sessionToken).getId());
 		param.put("accountId", newInstance.getAccountId());
 		param.put("deleted", false);
 		param.put("rev_starting", new Timestamp(newInstance.getRevStarting().getMillis()));
 		param.put("rev_ending", new Timestamp(newInstance.getRevEnding().getMillis()));
-		
+
 		Number generatedId = this.insertTemplate.executeAndReturnKey(param);
 		if (generatedId.longValue() < 1) {
 			throw new RuntimeException("Unable to create new Revenu");
@@ -166,6 +158,5 @@ public class RevenuesRepository implements IRepository<Revenue> {
 		// TODO Auto-generated method stub
 
 	}
-
 
 }
