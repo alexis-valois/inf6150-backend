@@ -1,6 +1,5 @@
 package com.ezbudget.repository;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,12 +14,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import com.ezbudget.entity.Account;
 import com.ezbudget.entity.Bill;
-import com.ezbudget.enumtype.AccountType;
 import com.ezbudget.filter.Filter;
 import com.ezbudget.filter.QueryCriteria;
-import com.ezbudget.rowmapper.AccountRowMapper;
 import com.ezbudget.rowmapper.BillsRowMapper;
 import com.ezbudget.service.AuthenticationService;
 import com.ezbudget.utils.SqlUtils;
