@@ -110,10 +110,11 @@ public class RevenuesRepository implements IRepository<Revenue> {
 		CurrencyUnit currency = amount.getCurrencyUnit();
 
 		String sql = "UPDATE " + TABLE_NAME + " SET amount = ?, " + "frequency = ?," + "rev_starting = ?,"
-				+ "rev_ending = ?," + "currency = ? " + "WHERE id = ? AND deleted != 1 AND userId = ("
-				+ "SELECT user_id FROM users WHERE session_token = ?" + ")";
+				+ "rev_ending = ?," + "currency = ?, " + "accountId = ? "
+				+ "WHERE id = ? AND deleted != 1 AND userId = (" + "SELECT user_id FROM users WHERE session_token = ?"
+				+ ")";
 		int updatedRows = this.jdbcTemplate.update(sql, new Object[] { amount.getAmount(), frequency, rev_starting,
-				rev_ending, currency.getCurrencyCode(), id, sessionToken });
+				rev_ending, currency.getCurrencyCode(), updated.getAccountId(), id, sessionToken });
 
 		if (updatedRows < 1) {
 			throw new RuntimeException("Unable to update id = " + id);

@@ -21,7 +21,11 @@ public class SqlUtils {
 		}
 
 		if (!deletableEntity) {
-			sb.delete(sb.lastIndexOf("AND"), sb.length());
+			if (!filters.isEmpty()) {
+				sb.delete(sb.lastIndexOf("AND"), sb.length());
+			} else {
+				sb.delete(sb.lastIndexOf("WHERE"), sb.length());
+			}
 		} else {
 			sb.append(entityName);
 			sb.append(".deleted != 1");
