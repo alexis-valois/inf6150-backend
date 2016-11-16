@@ -24,6 +24,7 @@ import com.ezbudget.annotation.Access;
 import com.ezbudget.converter.JSONObjectToEntityConverter;
 import com.ezbudget.entity.IEntity;
 import com.ezbudget.enumtype.RoleType;
+import com.ezbudget.exception.OperationDisallowedException;
 import com.ezbudget.filter.QueryCriteria;
 import com.ezbudget.filter.SubEntity;
 import com.ezbudget.repository.IRepository;
@@ -108,6 +109,10 @@ public class EntityController {
 				repositories.get(entityName).update(entity, sessionToken);
 			}
 			json.put("updateStatus", "updated");
+		} catch (OperationDisallowedException e) {
+			logger.error(e.getMessage());
+			json.put("updateStatus", e.getMessage());
+			return new ResponseEntity<JSONObject>(json, HttpStatus.METHOD_NOT_ALLOWED);
 		} catch (Throwable e) {
 			logger.error(e.getMessage());
 			json.put("updateStatus", e.getMessage());
@@ -131,6 +136,10 @@ public class EntityController {
 				repositories.get(entityName).create(entity, sessionToken);
 			}
 			json.put("createStatus", "created");
+		} catch (OperationDisallowedException e) {
+			logger.error(e.getMessage());
+			json.put("createStatus", e.getMessage());
+			return new ResponseEntity<JSONObject>(json, HttpStatus.METHOD_NOT_ALLOWED);
 		} catch (Throwable e) {
 			logger.error(e.getMessage());
 			json.put("createStatus", e.getMessage());
@@ -173,6 +182,11 @@ public class EntityController {
 				repositories.get(entityName).delete(entityId, sessionToken);
 				json.put("deleteStatus", "deleted");
 			}
+
+		} catch (OperationDisallowedException e) {
+			logger.error(e.getMessage());
+			json.put("deleteStatus", e.getMessage());
+			return new ResponseEntity<JSONObject>(json, HttpStatus.METHOD_NOT_ALLOWED);
 		} catch (Throwable e) {
 			logger.error(e.getMessage());
 			json.put("deleteStatus", e.getMessage());
