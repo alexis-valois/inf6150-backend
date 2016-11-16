@@ -10,3 +10,6 @@ INSERT INTO `ezbudget`.`enums` (`enum_key`, `enum_value`) VALUES ('REVENUE_FREQU
 INSERT INTO `ezbudget`.`enums` (`enum_key`, `enum_value`) VALUES ('REVENUE_FREQUENCY', 'WEEKLY');
 INSERT INTO `ezbudget`.`enums` (`enum_key`, `enum_value`) VALUES ('REVENUE_FREQUENCY', 'BI_WEEKLY');
 INSERT INTO `ezbudget`.`enums` (`enum_key`, `enum_value`) VALUES ('REVENUE_FREQUENCY', 'ONCE');
+
+INSERT INTO `ezbudget`.`enums` (`enum_key`, `enum_value`) VALUES ('CURRENCY', 'CAD');
+INSERT INTO `ezbudget`.`enums` (`enum_key`, `enum_value`) VALUES ('CURRENCY', 'USD');
