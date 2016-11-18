@@ -82,8 +82,7 @@ public class EntityController {
 
 	@RequestMapping(method = { RequestMethod.GET }, value = { "/{entityName}/{id}" })
 	@ResponseBody
-	ResponseEntity<JSONObject> findOne(@RequestHeader(value = "sessionToken") String sessionToken,
-			@PathVariable("entityName") String entityName, @PathVariable("id") int entityId) {
+	ResponseEntity<JSONObject> findOne(@RequestHeader(value = "sessionToken") String sessionToken, @PathVariable("entityName") String entityName, @PathVariable("id") int entityId) {
 		JSONObject rtn = new JSONObject();
 		try {
 			IEntity entity = queryService.getById(entityName, entityId, sessionToken);
