@@ -8,12 +8,15 @@ import javax.annotation.PostConstruct;
 
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import com.ezbudget.entity.Account;
+import com.ezbudget.entity.Revenue;
 import com.ezbudget.enumtype.AccountType;
 import com.ezbudget.filter.Filter;
 import com.ezbudget.filter.QueryCriteria;
@@ -36,9 +39,12 @@ public class AccountRepository implements IRepository<Account> {
 
 	@Autowired
 	private AuthenticationService authService;
-
+	
 	@Autowired
 	private HashMap<String, IRepository<?>> repositories;
+	
+	@Autowired
+	private RevenuesRepository revenuRepo;
 
 	@PostConstruct
 	private void registerRepository() {
@@ -150,6 +156,50 @@ public class AccountRepository implements IRepository<Account> {
 	public void validateEntity(Account entity) throws Exception {
 		// TODO Auto-generated method stub
 
+	}
+
+	
+	public Money getSolde(String sessionToken, int accountId, DateTime queryDate) throws Exception {
+		
+		Account account = this.findOne(accountId,sessionToken);
+		QueryCriteria qc = new QueryCriteria();
+		List<Filter> filters = qc.getFilters();
+		filters.add(new Filter("accountId", "eq", Long.toString(accountId)));
+		List<Revenue> revenuList = revenuRepo.findByCriteria(qc, sessionToken);
+		
+		Money initAmount = account.getInitAmount();
+		Money solde = null;
+		for (Revenue revenu : revenuList) {
+			
+		    switch(revenu.getFrequency()){
+		   
+		    	case "WEEKLY":
+		    		solde = extraireSole(queryDate, initAmount, revenu, 7);
+		    		break;
+		    	case "ONCE":
+		    		solde = revenu.getAmount().plus(initAmount);
+		    		break;
+		    	case "BI-WEEKLY":
+		    		solde = extraireSole(queryDate, initAmount, revenu, 14);
+		    		break;
+		    	case "MONTHLY":
+		    		solde = extraireSole(queryDate, initAmount, revenu, 30);
+		    }
+		}
+		//Reste à récupérer le montant de toutes les factures qui ont été crées entre la date 
+		//de création du compte et la date passée en paramètre et les soustraire au solde.
+
+		return solde;
+	}
+	
+	private Money extraireSole(DateTime queryDate, Money initAmount, Revenue revenu, int code) {
+		Money solde;
+		Days d = Days.daysBetween(revenu.getCreated(), queryDate);    
+		int nombreJour = d.getDays();
+		int diviseur = nombreJour/code;
+		Money revTotal = revenu.getAmount().multipliedBy(diviseur);
+		solde = revTotal.plus(initAmount);
+		return solde;
 	}
 
 }
