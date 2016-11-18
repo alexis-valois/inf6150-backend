@@ -107,15 +107,6 @@ public class BillRepository implements IRepository<Bill> {
 		
 		String sql = "UPDATE " + TABLE_NAME + " SET amount = ? , " + " currency = ?, " + "categorieId = ?, " + "supplierId = ?, accountId = ? "
 				+ "WHERE id = ? AND deleted != 1 AND userId = (SELECT user_id FROM users WHERE session_token = ?)";
-		Object test = new Object[]{ 
-				amount.getAmount(),
-				currency.getCurrencyCode(),
-				categoriesId,
-				suppliersId,
-				accountId,
-				billId,
-				sessionToken 
-		};
 		int updatedRows = this.jdbcTemplate.update(sql, new Object[] { 
 				amount.getAmount(),
 				currency.getCurrencyCode(),
@@ -138,6 +129,7 @@ public class BillRepository implements IRepository<Bill> {
 		param.put("deleted", false);
 		param.put("userId", authService.getAuthenticatedUserInfo(sessionToken).getId());
 		param.put("amount", newInstance.getAmount().getAmount());
+		//param.put("created", newInstance.getCreated());
 		param.put("currency", newInstance.getAmount().getCurrencyUnit().getCurrencyCode());
 		param.put("categorieId", newInstance.getCategoriesId());
 		param.put("supplierId", newInstance.getSupplierId());
