@@ -61,7 +61,7 @@ public class BillRepository implements IRepository<Bill> {
 		List<Filter> filters = criteria.getFilters();
 		filters.add(new Filter("session_token", "eq", sessionToken));
 		String countSql = SqlUtils.getCountSqlQuery(TABLE_NAME, criteria, DELETABLE);
-		countSql = SqlUtils.insertJointToSql(countSql, "INNER JOIN users ON accounts.userId = users.user_id");
+		countSql = SqlUtils.insertJointToSql(countSql, "INNER JOIN users ON bills.userId = users.user_id");
 		return this.jdbcTemplate.queryForObject(countSql, Long.class).longValue();
 	}
 	
@@ -79,12 +79,12 @@ public class BillRepository implements IRepository<Bill> {
 			List<Filter> filters) {
 		filters.add(new Filter("session_token", "eq", sessionToken));
 		String sql = SqlUtils.getFetchByQueryCriteriaSqlQuery(TABLE_NAME, criteria, DELETABLE);
-		sql = SqlUtils.insertJointToSql(sql, "INNER JOIN users ON accounts.userId = users.user_id");
+		sql = SqlUtils.insertJointToSql(sql, "INNER JOIN users ON bills.userId = users.user_id");
 		return sql;
 	}
 	@Override
 	public List<Bill> findAll(String sessionToken) throws Exception {
-		String sqlQuery = "SELECT * FROM accounts ac INNER JOIN users u ON ac.userId = u.user_id HAVING u.session_token = ? AND ac.deleted != 1";
+		String sqlQuery = "SELECT * FROM bills ac INNER JOIN users u ON ac.userId = u.user_id HAVING u.session_token = ? AND ac.deleted != 1";
 		return jdbcTemplate.query(sqlQuery, new BillsRowMapper(), new Object[] { sessionToken });
 	}
 	@Override
@@ -98,32 +98,36 @@ public class BillRepository implements IRepository<Bill> {
 	
 	@Override
 	public synchronized void update(Bill updated, String sessionToken) throws Exception {
-		long id = updated.getId();
-		DateTime created = updated.getCreated();
 		Money amount = updated.getAmount();
- 		long userId = updated.getUserId();
 		CurrencyUnit currency = amount.getCurrencyUnit();
 		long categoriesId = updated.getCategoriesId();
 		long suppliersId = updated.getSupplierId();
 		long accountId = updated.getAccountId();
+		long billId = updated.getId();
 		
-		String sql = "UPDATE " + TABLE_NAME + " SET type = ? , " + " name = ?, " + "initAmount = ?, " + "currency = ?"
-				+ "WHERE id = ? AND deleted != 1 AND userId = (" + "SELECT user_id FROM users WHERE session_token = ?"
-				+ ")";
-		int updatedRows = this.jdbcTemplate.update(sql, new Object[] { 
-				created.toString(), 
+		String sql = "UPDATE " + TABLE_NAME + " SET amount = ? , " + " currency = ?, " + "categorieId = ?, " + "supplierId = ?, accountId = ? "
+				+ "WHERE id = ? AND deleted != 1 AND userId = (SELECT user_id FROM users WHERE session_token = ?)";
+		Object test = new Object[]{ 
 				amount.getAmount(),
 				currency.getCurrencyCode(),
 				categoriesId,
 				suppliersId,
 				accountId,
-				id,
-				userId,
+				billId,
+				sessionToken 
+		};
+		int updatedRows = this.jdbcTemplate.update(sql, new Object[] { 
+				amount.getAmount(),
+				currency.getCurrencyCode(),
+				categoriesId,
+				suppliersId,
+				accountId,
+				billId,
 				sessionToken }
 		);
 
 		if (updatedRows < 1) {
-			throw new RuntimeException("Unable to update id = " + id);
+			throw new RuntimeException("Unable to update id = " + accountId);
 		}
 
 	}
@@ -131,12 +135,11 @@ public class BillRepository implements IRepository<Bill> {
 	@Override
 	public synchronized long create(Bill newInstance, String sessionToken) throws Exception {
 		Map<String, Object> param = new HashMap<String, Object>();
-		param.put("created", newInstance.getCreated().toString());
 		param.put("deleted", false);
 		param.put("userId", authService.getAuthenticatedUserInfo(sessionToken).getId());
-		param.put("amount", newInstance.getAmount());
+		param.put("amount", newInstance.getAmount().getAmount());
 		param.put("currency", newInstance.getAmount().getCurrencyUnit().getCurrencyCode());
-		param.put("categoriesId", newInstance.getCategoriesId());
+		param.put("categorieId", newInstance.getCategoriesId());
 		param.put("supplierId", newInstance.getSupplierId());
 		param.put("accountId", newInstance.getAccountId());
 		Number generatedId = this.insertTemplate.executeAndReturnKey(param);
