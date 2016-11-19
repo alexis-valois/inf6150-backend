@@ -197,8 +197,8 @@ public class AccountRepository implements IRepository<Account> {
 		Days d = Days.daysBetween(revenu.getCreated(), queryDate);    
 		int nombreJour = d.getDays();
 		int diviseur = nombreJour/code;
-		Money revTotal = revenu.getAmount().multipliedBy(diviseur);
-		solde = revTotal.plus(initAmount);
+		Money revenuTotal = revenu.getAmount().multipliedBy(diviseur);
+		solde = revenuTotal.plus(initAmount);
 		return solde;
 	}
 

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ezbudget.annotation.Access;
 import com.ezbudget.enumtype.RoleType;
 import com.ezbudget.repository.AccountRepository;
-import com.ezbudget.web.RestRessourceAssembler;
+
 
 @Access(role = RoleType.USER) 
 @RestController
@@ -33,8 +33,6 @@ public class FinancialController {
 	@Autowired
 	private AccountRepository accountRepo;
 	
-	@Autowired
-	private RestRessourceAssembler assembler;
 	
 	@RequestMapping(method = { RequestMethod.GET }, value = { "/solde/{accountId}" })
 	@ResponseBody
