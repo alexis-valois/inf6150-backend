@@ -169,22 +169,28 @@ public class AccountRepository implements IRepository<Account> {
 		
 		Money initAmount = account.getInitAmount();
 		Money solde = Money.zero(initAmount.getCurrencyUnit());
+		
 		for (Revenue revenu : revenuList) {
 			
-		    switch(revenu.getFrequency()){
-		   
-		    	case "WEEKLY":
-		    		solde = extraireSole(queryDate, initAmount, revenu, 7);
-		    		break;
-		    	case "ONCE":
-		    		solde = revenu.getAmount().plus(initAmount);
-		    		break;
-		    	case "BI-WEEKLY":
-		    		solde = extraireSole(queryDate, initAmount, revenu, 14);
-		    		break;
-		    	case "MONTHLY":
-		    		solde = extraireSole(queryDate, initAmount, revenu, 30);
-		    }
+			if (queryDate.isAfter(revenu.getRevStarting())  && queryDate.isBefore(revenu.getRevStarting())){
+				
+				switch(revenu.getFrequency()){
+				   
+			    	case "WEEKLY":
+			    		solde = extraireSole(queryDate, initAmount, revenu, 7);
+			    		break;
+			    	case "ONCE":
+			    		solde = revenu.getAmount().plus(initAmount);
+			    		break;
+			    	case "BI-WEEKLY":
+			    		solde = extraireSole(queryDate, initAmount, revenu, 14);
+			    		break;
+			    	case "MONTHLY":
+			    		solde = extraireSole(queryDate, initAmount, revenu, 30);
+				}
+				
+			} 
+			
 		}
 		//Reste à récupérer le montant de toutes les factures qui ont été crées entre la date 
 		//de création du compte et la date passée en paramètre et les soustraire au solde.
