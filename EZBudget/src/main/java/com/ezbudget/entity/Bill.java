@@ -9,7 +9,7 @@ public class Bill implements IEntity{
 	private DateTime created;
 	private long userId;
 	private Money amount;
-	private long categoriesId;
+	private long categorieId;
 	private long supplierId;
 	private long accountId;
 
@@ -45,12 +45,12 @@ public class Bill implements IEntity{
 		this.amount = amount;
 	}
 
-	public long getCategoriesId() {
-		return categoriesId;
+	public long getCategorieId() {
+		return categorieId;
 	}
 
-	public void setCategoriesId(long categoriesId) {
-		this.categoriesId = categoriesId;
+	public void setCategorieId(long categorieId) {
+		this.categorieId = categorieId;
 	}
 
 	public long getSupplierId() {

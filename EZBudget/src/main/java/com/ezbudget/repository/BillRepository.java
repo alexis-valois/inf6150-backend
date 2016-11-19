@@ -100,7 +100,7 @@ public class BillRepository implements IRepository<Bill> {
 	public synchronized void update(Bill updated, String sessionToken) throws Exception {
 		Money amount = updated.getAmount();
 		CurrencyUnit currency = amount.getCurrencyUnit();
-		long categoriesId = updated.getCategoriesId();
+		long categoriesId = updated.getCategorieId();
 		long suppliersId = updated.getSupplierId();
 		long accountId = updated.getAccountId();
 		long billId = updated.getId();
@@ -131,7 +131,7 @@ public class BillRepository implements IRepository<Bill> {
 		param.put("amount", newInstance.getAmount().getAmount());
 		//param.put("created", newInstance.getCreated());
 		param.put("currency", newInstance.getAmount().getCurrencyUnit().getCurrencyCode());
-		param.put("categorieId", newInstance.getCategoriesId());
+		param.put("categorieId", newInstance.getCategorieId());
 		param.put("supplierId", newInstance.getSupplierId());
 		param.put("accountId", newInstance.getAccountId());
 		Number generatedId = this.insertTemplate.executeAndReturnKey(param);

@@ -21,7 +21,7 @@ public class BillsRowMapper implements RowMapper<Bill>{
 		bill.setCreated(new DateTime(rs.getTimestamp("created")));
 		bill.setUserId(rs.getLong("userId"));
 		bill.setAmount(Money.of(currency, rs.getBigDecimal("amount")));
-		bill.setCategoriesId(rs.getLong("categorieId"));
+		bill.setCategorieId(rs.getLong("categorieId"));
 		bill.setSupplierId(rs.getLong("supplierId"));
 		bill.setAccountId(rs.getLong("accountId"));
 		return bill;
