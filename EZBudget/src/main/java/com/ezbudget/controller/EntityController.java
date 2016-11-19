@@ -24,9 +24,12 @@ import com.ezbudget.annotation.Access;
 import com.ezbudget.converter.JSONObjectToEntityConverter;
 import com.ezbudget.entity.IEntity;
 import com.ezbudget.enumtype.RoleType;
+import com.ezbudget.exception.OperationDisallowedException;
 import com.ezbudget.filter.QueryCriteria;
+import com.ezbudget.filter.SubEntity;
 import com.ezbudget.repository.IRepository;
 import com.ezbudget.service.QueryService;
+import com.ezbudget.service.SubEntityService;
 import com.ezbudget.utils.HttpUtils;
 import com.ezbudget.web.RestRessourceAssembler;
 
@@ -51,18 +54,23 @@ public class EntityController {
 	@Autowired
 	private QueryService queryService;
 
+	@Autowired
+	private SubEntityService subEntityService;
+
 	@SuppressWarnings("unchecked")
 	@RequestMapping(method = { RequestMethod.GET }, value = { "/{entityName}" })
 	@ResponseBody
 	ResponseEntity<JSONArray> findAll(@RequestHeader(value = "sessionToken") String sessionToken,
 			@PathVariable("entityName") String entityName, HttpServletRequest request) {
 		QueryCriteria criteria = httpUtils.getQueryCriteria(request);
+		List<SubEntity> subEntitiesRequirements = httpUtils.getSubEntitiesRequirements(request);
 		JSONArray rtn = new JSONArray();
 		if (repositories.containsKey(entityName)) {
 			List<IEntity> entities;
 			try {
 				entities = queryService.findByQueryCriteria(entityName, criteria, sessionToken);
 				rtn = this.assembler.getJSONResource((List<Object>) (Object) entities);
+				subEntityService.insertSubEntities(rtn, subEntitiesRequirements, sessionToken);
 			} catch (Exception e) {
 				logger.error(e.getMessage());
 				return new ResponseEntity<JSONArray>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -74,8 +82,7 @@ public class EntityController {
 
 	@RequestMapping(method = { RequestMethod.GET }, value = { "/{entityName}/{id}" })
 	@ResponseBody
-	ResponseEntity<JSONObject> findOne(@RequestHeader(value = "sessionToken") String sessionToken,
-			@PathVariable("entityName") String entityName, @PathVariable("id") int entityId) {
+	ResponseEntity<JSONObject> findOne(@RequestHeader(value = "sessionToken") String sessionToken, @PathVariable("entityName") String entityName, @PathVariable("id") int entityId) {
 		JSONObject rtn = new JSONObject();
 		try {
 			IEntity entity = queryService.getById(entityName, entityId, sessionToken);
@@ -101,6 +108,10 @@ public class EntityController {
 				repositories.get(entityName).update(entity, sessionToken);
 			}
 			json.put("updateStatus", "updated");
+		} catch (OperationDisallowedException e) {
+			logger.error(e.getMessage());
+			json.put("updateStatus", e.getMessage());
+			return new ResponseEntity<JSONObject>(json, HttpStatus.METHOD_NOT_ALLOWED);
 		} catch (Throwable e) {
 			logger.error(e.getMessage());
 			json.put("updateStatus", e.getMessage());
@@ -124,6 +135,10 @@ public class EntityController {
 				repositories.get(entityName).create(entity, sessionToken);
 			}
 			json.put("createStatus", "created");
+		} catch (OperationDisallowedException e) {
+			logger.error(e.getMessage());
+			json.put("createStatus", e.getMessage());
+			return new ResponseEntity<JSONObject>(json, HttpStatus.METHOD_NOT_ALLOWED);
 		} catch (Throwable e) {
 			logger.error(e.getMessage());
 			json.put("createStatus", e.getMessage());
@@ -166,6 +181,11 @@ public class EntityController {
 				repositories.get(entityName).delete(entityId, sessionToken);
 				json.put("deleteStatus", "deleted");
 			}
+
+		} catch (OperationDisallowedException e) {
+			logger.error(e.getMessage());
+			json.put("deleteStatus", e.getMessage());
+			return new ResponseEntity<JSONObject>(json, HttpStatus.METHOD_NOT_ALLOWED);
 		} catch (Throwable e) {
 			logger.error(e.getMessage());
 			json.put("deleteStatus", e.getMessage());
