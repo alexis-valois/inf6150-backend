@@ -28,7 +28,7 @@ import com.ezbudget.web.RestRessourceAssembler;
 @RequestMapping({ "/rest/finance" })
 public class FinancialController {
 	
-	private static Logger logger = LoggerFactory.getLogger(EntityController.class);
+	private static Logger logger = LoggerFactory.getLogger(FinancialController.class);
 	
 	@Autowired
 	private AccountRepository accountRepo;
@@ -40,12 +40,13 @@ public class FinancialController {
 	@ResponseBody
 	ResponseEntity<JSONObject>getSolde(@RequestHeader(value = "sessionToken") String sessionToken,
 	            @PathVariable("accountId") int accountId, HttpServletRequest request,
-	            @RequestParam(value="date") String dateString, DateTime queryDate) {
-	            	
+	            @RequestParam(value="date") String dateString) {
+		
+		DateTime queryDate = DateTime.parse(dateString);     	
 	    JSONObject rtn = new JSONObject();
 	    try{
 	    	Money solde = accountRepo.getSolde(sessionToken, accountId, queryDate);
-			rtn = this.assembler.getJSONResource(solde);
+			rtn = rtn.append("solde", solde.getAmount());;
 	        return new ResponseEntity<JSONObject>(rtn, HttpStatus.ACCEPTED);
 	     }catch(Exception e){
 	        logger.error(e.getMessage());

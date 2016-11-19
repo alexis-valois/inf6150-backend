@@ -168,7 +168,7 @@ public class AccountRepository implements IRepository<Account> {
 		List<Revenue> revenuList = revenuRepo.findByCriteria(qc, sessionToken);
 		
 		Money initAmount = account.getInitAmount();
-		Money solde = null;
+		Money solde = Money.zero(initAmount.getCurrencyUnit());
 		for (Revenue revenu : revenuList) {
 			
 		    switch(revenu.getFrequency()){
@@ -193,7 +193,7 @@ public class AccountRepository implements IRepository<Account> {
 	}
 	
 	private Money extraireSole(DateTime queryDate, Money initAmount, Revenue revenu, int code) {
-		Money solde;
+		Money solde = Money.zero(initAmount.getCurrencyUnit());
 		Days d = Days.daysBetween(revenu.getCreated(), queryDate);    
 		int nombreJour = d.getDays();
 		int diviseur = nombreJour/code;
