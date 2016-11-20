@@ -1,5 +1,6 @@
 package com.ezbudget.repository;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,6 @@ import javax.annotation.PostConstruct;
 
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -23,14 +23,14 @@ import com.ezbudget.utils.SqlUtils;
 
 @Repository
 public class BillRepository implements IRepository<Bill> {
-	
+
 	private static final String TABLE_NAME = "bills";
 	private String SINGULAR_NAME = "bill";
 	private String PLURAL_NAME = "bills";
 	private boolean DELETABLE = true;
 
 	private SimpleJdbcInsert insertTemplate;
-	
+
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -46,6 +46,7 @@ public class BillRepository implements IRepository<Bill> {
 		this.insertTemplate = new SimpleJdbcInsert(this.jdbcTemplate);
 		this.insertTemplate.withTableName(TABLE_NAME).usingGeneratedKeyColumns("bill_id");
 	}
+
 	@Override
 	public String getSingularName() {
 		return this.SINGULAR_NAME;
@@ -64,7 +65,7 @@ public class BillRepository implements IRepository<Bill> {
 		countSql = SqlUtils.insertJointToSql(countSql, "INNER JOIN users ON bills.userId = users.user_id");
 		return this.jdbcTemplate.queryForObject(countSql, Long.class).longValue();
 	}
-	
+
 	@Override
 	public List<Bill> findByCriteria(QueryCriteria criteria, String sessionToken) throws Exception {
 		List<Filter> filters = criteria.getFilters();
@@ -74,7 +75,7 @@ public class BillRepository implements IRepository<Bill> {
 		String sql = getSessionTokenDrivenResultSetRestriction(criteria, sessionToken, filters);
 		return this.jdbcTemplate.query(sql, new Object[0], new BillsRowMapper());
 	}
-	
+
 	private String getSessionTokenDrivenResultSetRestriction(QueryCriteria criteria, String sessionToken,
 			List<Filter> filters) {
 		filters.add(new Filter("session_token", "eq", sessionToken));
@@ -82,11 +83,13 @@ public class BillRepository implements IRepository<Bill> {
 		sql = SqlUtils.insertJointToSql(sql, "INNER JOIN users ON bills.userId = users.user_id");
 		return sql;
 	}
+
 	@Override
 	public List<Bill> findAll(String sessionToken) throws Exception {
 		String sqlQuery = "SELECT * FROM bills ac INNER JOIN users u ON ac.userId = u.user_id HAVING u.session_token = ? AND ac.deleted != 1";
 		return jdbcTemplate.query(sqlQuery, new BillsRowMapper(), new Object[] { sessionToken });
 	}
+
 	@Override
 	public Bill findOne(long id, String sessionToken) throws Exception {
 		QueryCriteria qc = new QueryCriteria();
@@ -95,7 +98,7 @@ public class BillRepository implements IRepository<Bill> {
 		List<Bill> billList = findByCriteria(qc, sessionToken);
 		return billList.get(0);
 	}
-	
+
 	@Override
 	public synchronized void update(Bill updated, String sessionToken) throws Exception {
 		Money amount = updated.getAmount();
@@ -104,32 +107,27 @@ public class BillRepository implements IRepository<Bill> {
 		long suppliersId = updated.getSupplierId();
 		long accountId = updated.getAccountId();
 		long billId = updated.getId();
-		
-		String sql = "UPDATE " + TABLE_NAME + " SET amount = ? , " + " currency = ?, " + "categorieId = ?, " + "supplierId = ?, accountId = ? "
+		Timestamp billDate = new Timestamp(updated.getBillDate().getMillis());
+
+		String sql = "UPDATE " + TABLE_NAME + " SET amount = ? , " + " currency = ?, " + "categorieId = ?, "
+				+ "supplierId = ?, accountId = ?,  bill_date = ?"
 				+ "WHERE id = ? AND deleted != 1 AND userId = (SELECT user_id FROM users WHERE session_token = ?)";
-		int updatedRows = this.jdbcTemplate.update(sql, new Object[] { 
-				amount.getAmount(),
-				currency.getCurrencyCode(),
-				categoriesId,
-				suppliersId,
-				accountId,
-				billId,
-				sessionToken }
-		);
+		int updatedRows = this.jdbcTemplate.update(sql, new Object[] { amount.getAmount(), currency.getCurrencyCode(),
+				categoriesId, suppliersId, accountId, billDate, billId, sessionToken });
 
 		if (updatedRows < 1) {
 			throw new RuntimeException("Unable to update id = " + accountId);
 		}
 
 	}
-	
+
 	@Override
 	public synchronized long create(Bill newInstance, String sessionToken) throws Exception {
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("deleted", false);
 		param.put("userId", authService.getAuthenticatedUserInfo(sessionToken).getId());
 		param.put("amount", newInstance.getAmount().getAmount());
-		//param.put("created", newInstance.getCreated());
+		param.put("bill_date", new Timestamp(newInstance.getBillDate().getMillis()));
 		param.put("currency", newInstance.getAmount().getCurrencyUnit().getCurrencyCode());
 		param.put("categorieId", newInstance.getCategorieId());
 		param.put("supplierId", newInstance.getSupplierId());
@@ -140,7 +138,7 @@ public class BillRepository implements IRepository<Bill> {
 		}
 		return generatedId.longValue();
 	}
-	
+
 	@Override
 	public void delete(int entityId, String sessionToken) throws Exception {
 		if (DELETABLE) {
@@ -152,38 +150,11 @@ public class BillRepository implements IRepository<Bill> {
 			}
 		}
 	}
-	
+
 	@Override
 	public void validateEntity(Bill entity) throws Exception {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

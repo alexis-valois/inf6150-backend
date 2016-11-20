@@ -80,7 +80,7 @@ public class RevenuesRepository implements IRepository<Revenue> {
 			List<Filter> filters) {
 		filters.add(new Filter("session_token", "eq", sessionToken));
 		String sql = SqlUtils.getFetchByQueryCriteriaSqlQuery(TABLE_NAME, criteria, DELETABLE);
-		sql = SqlUtils.insertJointToSql(sql, "INNER JOIN users ON revevues.userId = users.user_id");
+		sql = SqlUtils.insertJointToSql(sql, "INNER JOIN users ON revenues.userId = users.user_id");
 		return sql;
 	}
 
