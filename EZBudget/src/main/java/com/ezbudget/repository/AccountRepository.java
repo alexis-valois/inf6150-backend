@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import com.ezbudget.entity.Account;
+import com.ezbudget.entity.Bill;
 import com.ezbudget.entity.Revenue;
 import com.ezbudget.enumtype.AccountType;
 import com.ezbudget.filter.Filter;
@@ -45,6 +46,9 @@ public class AccountRepository implements IRepository<Account> {
 	
 	@Autowired
 	private RevenuesRepository revenuRepo;
+	
+	@Autowired
+	private BillRepository billRepo;
 
 	@PostConstruct
 	private void registerRepository() {
@@ -168,7 +172,7 @@ public class AccountRepository implements IRepository<Account> {
 		List<Revenue> revenuList = revenuRepo.findByCriteria(qc, sessionToken);
 		
 		Money initAmount = account.getInitAmount();
-		Money solde = Money.zero(initAmount.getCurrencyUnit());
+		Money solde = initAmount;
 		
 		for (Revenue revenu : revenuList) {
 			
@@ -177,35 +181,32 @@ public class AccountRepository implements IRepository<Account> {
 				switch(revenu.getFrequency()){
 				   
 			    	case "WEEKLY":
-			    		solde = extraireSole(queryDate, initAmount, revenu, 7);
+			    		solde = solde.plus(extraireSole(queryDate, revenu, 7));
 			    		break;
 			    	case "ONCE":
-			    		solde = revenu.getAmount().plus(initAmount);
+			    		solde = solde.plus(revenu.getAmount());
 			    		break;
 			    	case "BI-WEEKLY":
-			    		solde = extraireSole(queryDate, initAmount, revenu, 14);
+			    		solde = solde.plus(extraireSole(queryDate, revenu, 14));
 			    		break;
 			    	case "MONTHLY":
-			    		solde = extraireSole(queryDate, initAmount, revenu, 30);
+			    		solde = solde.plus(extraireSole(queryDate, revenu, 30));
 				}
 				
 			} 
-			
 		}
-		//Reste à récupérer le montant de toutes les factures qui ont été crées entre la date 
-		//de création du compte et la date passée en paramètre et les soustraire au solde.
-
+		List<Bill> listBill = billRepo.findAll(sessionToken);
+		for (Bill bill : listBill) {
+			solde = solde.minus(bill.getAmount());
+		}
 		return solde;
 	}
 	
-	private Money extraireSole(DateTime queryDate, Money initAmount, Revenue revenu, int code) {
-		Money solde = Money.zero(initAmount.getCurrencyUnit());
+	private Money extraireSole(DateTime queryDate, Revenue revenu, int code) {
 		Days d = Days.daysBetween(revenu.getCreated(), queryDate);    
 		int nombreJour = d.getDays();
 		int diviseur = nombreJour/code;
-		Money revenuTotal = revenu.getAmount().multipliedBy(diviseur);
-		solde = revenuTotal.plus(initAmount);
-		return solde;
+		return  revenu.getAmount().multipliedBy(diviseur);
 	}
 
 }
