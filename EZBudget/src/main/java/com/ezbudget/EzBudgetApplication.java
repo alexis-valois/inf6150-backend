@@ -8,7 +8,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.Profile;
 
 @Configuration
 @ComponentScan
@@ -18,7 +17,6 @@ import org.springframework.context.annotation.Profile;
 public class EzBudgetApplication {
 
 	public static void main(String[] args) {
-		args = new String[]{"--spring.profiles.active=serge"};
 		SpringApplication.run(EzBudgetApplication.class, args);
 	}
 }
