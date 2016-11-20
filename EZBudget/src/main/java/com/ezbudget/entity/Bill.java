@@ -3,15 +3,24 @@ package com.ezbudget.entity;
 import org.joda.money.Money;
 import org.joda.time.DateTime;
 
-public class Bill implements IEntity{
-	
+public class Bill implements IEntity {
+
 	private long id;
 	private DateTime created;
+	private DateTime billDate;
 	private long userId;
 	private Money amount;
 	private long categorieId;
 	private long supplierId;
 	private long accountId;
+
+	public DateTime getBillDate() {
+		return billDate;
+	}
+
+	public void setBillDate(DateTime billDate) {
+		this.billDate = billDate;
+	}
 
 	public long getId() {
 		return id;
@@ -68,7 +77,7 @@ public class Bill implements IEntity{
 	public void setAccountId(long accountId) {
 		this.accountId = accountId;
 	}
-	
+
 	@Override
 	public boolean isEmpty() {
 		// TODO Auto-generated method stub

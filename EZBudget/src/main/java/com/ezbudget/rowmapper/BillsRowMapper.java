@@ -8,10 +8,9 @@ import org.joda.money.Money;
 import org.joda.time.DateTime;
 import org.springframework.jdbc.core.RowMapper;
 
-
 import com.ezbudget.entity.Bill;
 
-public class BillsRowMapper implements RowMapper<Bill>{
+public class BillsRowMapper implements RowMapper<Bill> {
 
 	@Override
 	public Bill mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -24,6 +23,7 @@ public class BillsRowMapper implements RowMapper<Bill>{
 		bill.setCategorieId(rs.getLong("categorieId"));
 		bill.setSupplierId(rs.getLong("supplierId"));
 		bill.setAccountId(rs.getLong("accountId"));
+		bill.setBillDate(new DateTime(rs.getTimestamp("bill_date")));
 		return bill;
 	}
 }

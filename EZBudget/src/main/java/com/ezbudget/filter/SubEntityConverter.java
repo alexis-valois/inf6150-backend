@@ -12,7 +12,7 @@ public class SubEntityConverter implements Converter<String, SubEntity> {
 	public SubEntity convert(String source) {
 		String[] sections = source.split(SubEntity.SUBENTITY_INNER_SEPARATOR);
 		if ((sections == null) || (sections.length < 2)) {
-			throw new SubEntitiesParsingException("Invalid subEntities string format. subEntities=" + source);
+			throw new SubEntitiesParsingException("Invalid subEntities string format. subEntity=" + source);
 		}
 		String type = sections[0];
 		String foreignKeyName = sections[1];

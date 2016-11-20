@@ -1,0 +1,2 @@
+ALTER TABLE `ezbudget`.`bills` 
+ADD COLUMN `bill_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `currency`;

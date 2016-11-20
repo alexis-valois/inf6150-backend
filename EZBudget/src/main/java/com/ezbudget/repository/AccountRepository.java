@@ -9,7 +9,8 @@ import javax.annotation.PostConstruct;
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
 import org.joda.time.DateTime;
-import org.joda.time.Days;
+import org.joda.time.Months;
+import org.joda.time.Weeks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -40,13 +41,13 @@ public class AccountRepository implements IRepository<Account> {
 
 	@Autowired
 	private AuthenticationService authService;
-	
+
 	@Autowired
 	private HashMap<String, IRepository<?>> repositories;
-	
+
 	@Autowired
 	private RevenuesRepository revenuRepo;
-	
+
 	@Autowired
 	private BillRepository billRepo;
 
@@ -162,51 +163,52 @@ public class AccountRepository implements IRepository<Account> {
 
 	}
 
-	
-	public Money getSolde(String sessionToken, int accountId, DateTime queryDate) throws Exception {
-		
-		Account account = this.findOne(accountId,sessionToken);
+	public Money getSolde(String sessionToken, long accountId, DateTime queryDate) throws Exception {
+
+		Account account = this.findOne(accountId, sessionToken);
 		QueryCriteria qc = new QueryCriteria();
 		List<Filter> filters = qc.getFilters();
 		filters.add(new Filter("accountId", "eq", Long.toString(accountId)));
+		filters.add(new Filter("rev_starting", "le", queryDate.toString()));
+		filters.add(new Filter("rev_ending", "ge", queryDate.toString()));
 		List<Revenue> revenuList = revenuRepo.findByCriteria(qc, sessionToken);
-		
+
 		Money initAmount = account.getInitAmount();
 		Money solde = initAmount;
-		
+
 		for (Revenue revenu : revenuList) {
-			
-			if (queryDate.isAfter(revenu.getRevStarting())  && queryDate.isBefore(revenu.getRevStarting())){
-				
-				switch(revenu.getFrequency()){
-				   
-			    	case "WEEKLY":
-			    		solde = solde.plus(extraireSole(queryDate, revenu, 7));
-			    		break;
-			    	case "ONCE":
-			    		solde = solde.plus(revenu.getAmount());
-			    		break;
-			    	case "BI-WEEKLY":
-			    		solde = solde.plus(extraireSole(queryDate, revenu, 14));
-			    		break;
-			    	case "MONTHLY":
-			    		solde = solde.plus(extraireSole(queryDate, revenu, 30));
-				}
-				
-			} 
+
+			solde = solde.plus(determinerIncrementSolde(queryDate, revenu));
 		}
-		List<Bill> listBill = billRepo.findAll(sessionToken);
+
+		qc = new QueryCriteria();
+		filters = qc.getFilters();
+		filters.add(new Filter("accountId", "eq", Long.toString(accountId)));
+		filters.add(new Filter("bill_date", "le", queryDate.toString()));
+		List<Bill> listBill = billRepo.findByCriteria(qc, sessionToken);
+
 		for (Bill bill : listBill) {
 			solde = solde.minus(bill.getAmount());
 		}
+
 		return solde;
 	}
-	
-	private Money extraireSole(DateTime queryDate, Revenue revenu, int code) {
-		Days d = Days.daysBetween(revenu.getCreated(), queryDate);    
-		int nombreJour = d.getDays();
-		int diviseur = nombreJour/code;
-		return  revenu.getAmount().multipliedBy(diviseur);
+
+	private Money determinerIncrementSolde(DateTime queryDate, Revenue revenu) {
+		switch (revenu.getFrequency()) {
+		case "WEEKLY":
+			Weeks w = Weeks.weeksBetween(revenu.getRevStarting(), queryDate);
+			return revenu.getAmount().multipliedBy(w.getWeeks());
+		case "ONCE":
+			return revenu.getAmount();
+		case "BI_WEEKLY":
+			Months m = Months.monthsBetween(revenu.getRevStarting(), queryDate);
+			return revenu.getAmount().multipliedBy(m.getMonths() * 2);
+		case "MONTHLY":
+			Months mon = Months.monthsBetween(revenu.getRevStarting(), queryDate);
+			return revenu.getAmount().multipliedBy(mon.getMonths());
+		}
+		return Money.zero(revenu.getAmount().getCurrencyUnit());
 	}
 
 }
