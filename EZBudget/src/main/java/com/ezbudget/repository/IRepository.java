@@ -6,10 +6,7 @@ import com.ezbudget.filter.QueryCriteria;
 
 public interface IRepository<T> {
 
-	public List<T> findByCriteria(QueryCriteria criteria, String sessionToken)
-			throws Exception;
-
-	public List<T> findAll(String sessionToken) throws Exception;
+	public List<T> findByCriteria(QueryCriteria criteria, String sessionToken) throws Exception;
 
 	public long count(QueryCriteria criteria, String sessionToken);
 

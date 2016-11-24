@@ -76,12 +76,6 @@ public class EBAuthorityRepository implements IRepository<EBAuthority> {
 	}
 
 	@Override
-	public List<EBAuthority> findAll(String sessionToken) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public EBAuthority findOne(long id, String sessionToken) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
