@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ezbudget.annotation.Access;
 import com.ezbudget.entity.Account;
 import com.ezbudget.enumtype.RoleType;
+import com.ezbudget.filter.QueryCriteria;
 import com.ezbudget.filter.SubEntity;
 import com.ezbudget.repository.AccountRepository;
 import com.ezbudget.service.SubEntityService;
@@ -72,7 +73,7 @@ public class FinancialController {
 		DateTime queryDate = DateTime.parse(dateString);
 		JSONArray rtn = new JSONArray();
 		try {
-			List<Account> accounts = accountRepo.findAll(sessionToken);
+			List<Account> accounts = accountRepo.findByCriteria(new QueryCriteria(), sessionToken);
 			for (Account acc : accounts) {
 				JSONObject soldeObj = new JSONObject();
 				Money solde = accountRepo.getSolde(sessionToken, acc.getId(), queryDate);

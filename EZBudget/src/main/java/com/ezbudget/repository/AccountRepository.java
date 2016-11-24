@@ -79,26 +79,16 @@ public class AccountRepository implements IRepository<Account> {
 
 	@Override
 	public List<Account> findByCriteria(QueryCriteria criteria, String sessionToken) throws Exception {
-		List<Filter> filters = criteria.getFilters();
-		if ((filters == null) || (filters.size() == 0)) {
-			return this.findAll(sessionToken);
-		}
-		String sql = getSessionTokenDrivenResultSetRestriction(criteria, sessionToken, filters);
+		String sql = getSessionTokenDrivenResultSetRestriction(criteria, sessionToken);
 		return this.jdbcTemplate.query(sql, new Object[0], new AccountRowMapper());
 	}
 
-	private String getSessionTokenDrivenResultSetRestriction(QueryCriteria criteria, String sessionToken,
-			List<Filter> filters) {
+	private String getSessionTokenDrivenResultSetRestriction(QueryCriteria criteria, String sessionToken) {
+		List<Filter> filters = criteria.getFilters();
 		filters.add(new Filter("session_token", "eq", sessionToken));
 		String sql = SqlUtils.getFetchByQueryCriteriaSqlQuery(TABLE_NAME, criteria, DELETABLE);
 		sql = SqlUtils.insertJointToSql(sql, "INNER JOIN users ON accounts.userId = users.user_id");
 		return sql;
-	}
-
-	@Override
-	public List<Account> findAll(String sessionToken) throws Exception {
-		String sqlQuery = "SELECT * FROM accounts ac INNER JOIN users u ON ac.userId = u.user_id HAVING u.session_token = ? AND ac.deleted != 1";
-		return jdbcTemplate.query(sqlQuery, new AccountRowMapper(), new Object[] { sessionToken });
 	}
 
 	@Override

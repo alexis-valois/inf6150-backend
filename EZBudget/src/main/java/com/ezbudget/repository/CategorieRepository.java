@@ -66,26 +66,16 @@ public class CategorieRepository implements IRepository<Categorie> {
 
 	@Override
 	public List<Categorie> findByCriteria(QueryCriteria criteria, String sessionToken) throws Exception {
-		List<Filter> filters = criteria.getFilters();
-		if ((filters == null) || (filters.size() == 0)) {
-			return this.findAll(sessionToken);
-		}
-		String sql = getSessionTokenDrivenResultSetRestriction(criteria, sessionToken, filters);
+		String sql = getSessionTokenDrivenResultSetRestriction(criteria, sessionToken);
 		return this.jdbcTemplate.query(sql, new Object[0], new CategorieRowMapper());
 	}
 
-	private String getSessionTokenDrivenResultSetRestriction(QueryCriteria criteria, String sessionToken,
-			List<Filter> filters) {
+	private String getSessionTokenDrivenResultSetRestriction(QueryCriteria criteria, String sessionToken) {
+		List<Filter> filters = criteria.getFilters();
 		filters.add(new Filter("session_token", "eq", sessionToken));
 		String sql = SqlUtils.getFetchByQueryCriteriaSqlQuery(TABLE_NAME, criteria, DELETABLE);
 		sql = SqlUtils.insertJointToSql(sql, "INNER JOIN users ON categories.userId = users.user_id");
 		return sql;
-	}
-
-	@Override
-	public List<Categorie> findAll(String sessionToken) throws Exception {
-		String sqlQuery = "SELECT * FROM categories cat INNER JOIN users u ON cat.userId = u.user_id HAVING u.session_token = ? AND cat.deleted != 1";
-		return jdbcTemplate.query(sqlQuery, new CategorieRowMapper(), new Object[] { sessionToken });
 	}
 
 	@Override
@@ -102,9 +92,9 @@ public class CategorieRepository implements IRepository<Categorie> {
 		long id = updated.getId();
 		String name = updated.getCategorieName();
 		String sql = "UPDATE " + TABLE_NAME + " SET name = ? "
-				+ "WHERE categories_id = ? AND deleted != 1 AND userId = (" + "SELECT user_id FROM users WHERE session_token = ?"
-				+ ")";
-		int updatedRows = this.jdbcTemplate.update(sql, new Object[] {name, id, sessionToken });
+				+ "WHERE categories_id = ? AND deleted != 1 AND userId = ("
+				+ "SELECT user_id FROM users WHERE session_token = ?" + ")";
+		int updatedRows = this.jdbcTemplate.update(sql, new Object[] { name, id, sessionToken });
 
 		if (updatedRows < 1) {
 			throw new RuntimeException("Unable to update id = " + id);

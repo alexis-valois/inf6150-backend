@@ -53,16 +53,8 @@ public class SqlUtils {
 
 	public static String getOrderBySqlQuery(String entityName, String[] sortParams) {
 		StringBuilder sb = new StringBuilder();
-
-		String[] tmp = null;
 		for (String s : sortParams) {
-			if (!(s.contains(";")))
-				continue;
-			tmp = s.split(";");
-			if (tmp.length != 2)
-				continue;
-
-			sb.append(" ").append(entityName).append(".").append(tmp[0]).append(" ").append(tmp[1]).append(",");
+			sb.append(" ").append(entityName).append(".").append(s).append(",");
 		}
 		if ((sortParams.length > 0) && (sb.length() > 0)) {
 			sb.insert(0, " ORDER BY");

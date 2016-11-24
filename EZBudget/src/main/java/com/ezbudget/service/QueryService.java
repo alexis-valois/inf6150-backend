@@ -24,10 +24,6 @@ public class QueryService {
 		return rtn;
 	}
 
-	public List<IEntity> findAll(String entityName, String sessionToken) throws Exception {
-		return findByQueryCriteria(entityName, new QueryCriteria(), sessionToken);
-	}
-
 	@SuppressWarnings("unchecked")
 	public List<IEntity> findByQueryCriteria(String entityName, QueryCriteria criteria, String sessionToken)
 			throws Exception {

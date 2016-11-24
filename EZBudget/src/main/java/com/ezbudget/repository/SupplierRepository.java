@@ -20,7 +20,7 @@ import com.ezbudget.utils.SqlUtils;
 
 @Repository
 public class SupplierRepository implements IRepository<Supplier> {
-	
+
 	private static final String TABLE_NAME = "suppliers";
 	private String SINGULAR_NAME = "supplier";
 	private String PLURAL_NAME = "suppliers";
@@ -30,42 +30,33 @@ public class SupplierRepository implements IRepository<Supplier> {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
-	
+
 	@Autowired
 	private AuthenticationService authService;
 
 	@Autowired
 	private HashMap<String, IRepository<?>> repositories;
-	
+
 	@PostConstruct
 	private void registerRepository() {
 		repositories.put(TABLE_NAME, this);
 		this.insertTemplate = new SimpleJdbcInsert(this.jdbcTemplate);
 		this.insertTemplate.withTableName(TABLE_NAME).usingGeneratedKeyColumns("supplier_id");
 	}
-	
-	private String getSessionTokenDrivenResultSetRestriction(QueryCriteria criteria, String sessionToken,
-			List<Filter> filters) {
+
+	private String getSessionTokenDrivenResultSetRestriction(QueryCriteria criteria, String sessionToken) {
+		List<Filter> filters = criteria.getFilters();
 		filters.add(new Filter("session_token", "eq", sessionToken));
 		String sql = SqlUtils.getFetchByQueryCriteriaSqlQuery(TABLE_NAME, criteria, DELETABLE);
 		sql = SqlUtils.insertJointToSql(sql, "INNER JOIN users ON suppliers.userId = users.user_id");
 		return sql;
 	}
-	
-	@Override
-	public List<Supplier> findByCriteria(QueryCriteria criteria, String sessionToken) throws Exception {
-		List<Filter> filters = criteria.getFilters();
-		if ((filters == null) || (filters.size() == 0)) {
-			return this.findAll(sessionToken);
-		}
-		String sql = getSessionTokenDrivenResultSetRestriction(criteria, sessionToken, filters);
-		return this.jdbcTemplate.query(sql, new Object[0], new SupplierRowMapper());
-	}
 
 	@Override
-	public List<Supplier> findAll(String sessionToken) throws Exception {
-		String sqlQuery = "SELECT * FROM suppliers su INNER JOIN users u ON su.userId = u.user_id HAVING u.session_token = ?AND su.deleted != 1";
-		return jdbcTemplate.query(sqlQuery, new SupplierRowMapper(), new Object[] { sessionToken });
+	public List<Supplier> findByCriteria(QueryCriteria criteria, String sessionToken) throws Exception {
+
+		String sql = getSessionTokenDrivenResultSetRestriction(criteria, sessionToken);
+		return this.jdbcTemplate.query(sql, new Object[0], new SupplierRowMapper());
 	}
 
 	@Override
@@ -90,15 +81,14 @@ public class SupplierRepository implements IRepository<Supplier> {
 	public synchronized void update(Supplier updated, String sessionToken) throws Exception {
 		long id = updated.getId();
 		String name = updated.getSupplierName();
-		String sql = "UPDATE " + TABLE_NAME + " SET name = ? "
-				+ "WHERE id = ? AND deleted != 1 AND userId = (" + "SELECT user_id FROM users WHERE session_token = ?"
-				+ ")";
+		String sql = "UPDATE " + TABLE_NAME + " SET name = ? " + "WHERE id = ? AND deleted != 1 AND userId = ("
+				+ "SELECT user_id FROM users WHERE session_token = ?" + ")";
 		int updatedRows = this.jdbcTemplate.update(sql, new Object[] { name, id, sessionToken });
 
 		if (updatedRows < 1) {
 			throw new RuntimeException("Unable to update id = " + id);
 		}
-		
+
 	}
 
 	@Override
@@ -139,6 +129,6 @@ public class SupplierRepository implements IRepository<Supplier> {
 	@Override
 	public void validateEntity(Supplier entity) throws Exception {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

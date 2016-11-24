@@ -135,12 +135,6 @@ public class EBUserRepository implements IRepository<EBUser> {
 	}
 
 	@Override
-	public List<EBUser> findAll(String sessionToken) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public long count(QueryCriteria criteria, String sessionToken) {
 		// TODO Auto-generated method stub
 		return 0;

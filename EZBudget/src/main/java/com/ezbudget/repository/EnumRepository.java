@@ -53,18 +53,8 @@ public class EnumRepository implements IRepository<EBEnum> {
 
 	@Override
 	public List<EBEnum> findByCriteria(QueryCriteria criteria, String sessionToken) throws Exception {
-		List<Filter> filters = criteria.getFilters();
-		if ((filters == null) || (filters.size() == 0)) {
-			return this.findAll(sessionToken);
-		}
 		String sql = SqlUtils.getFetchByQueryCriteriaSqlQuery(TABLE_NAME, criteria, DELETABLE);
 		return this.jdbcTemplate.query(sql, new Object[0], new EBEnumRowMapper());
-	}
-
-	@Override
-	public List<EBEnum> findAll(String sessionToken) throws Exception {
-		String sqlQuery = "SELECT * FROM enums";
-		return jdbcTemplate.query(sqlQuery, new EBEnumRowMapper());
 	}
 
 	@Override
