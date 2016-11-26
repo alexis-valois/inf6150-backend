@@ -62,6 +62,10 @@ public class AuthenticationService {
 		return getAuthenticatedUserInfo(sessionToken).getAuthorities();
 	}
 
+	public boolean userExists(String username) {
+		return !userRepository.findByUsername(username).isEmpty();
+	}
+
 	public EBUser authenticate(String username, String password) throws Exception {
 		EBUser user = userRepository.findByUsername(username);
 		String sessionToken = "";
