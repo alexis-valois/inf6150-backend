@@ -86,7 +86,12 @@ public class RevenuesRepository implements IRepository<Revenue> {
 		List<Filter> filters = qc.getFilters();
 		filters.add(new Filter("id", "eq", Long.toString(id)));
 		List<Revenue> revenueList = findByCriteria(qc, sessionToken);
-		return revenueList.get(0);
+		if (!revenueList.isEmpty()) {
+			return revenueList.get(0);
+		} else {
+			return new Revenue();
+		}
+
 	}
 
 	@Override

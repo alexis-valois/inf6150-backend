@@ -84,7 +84,12 @@ public class CategorieRepository implements IRepository<Categorie> {
 		List<Filter> filters = qc.getFilters();
 		filters.add(new Filter("categories_id", "eq", Long.toString(id)));
 		List<Categorie> categorieList = findByCriteria(qc, sessionToken);
-		return categorieList.get(0);
+		if (!categorieList.isEmpty()) {
+			return categorieList.get(0);
+		} else {
+			return new Categorie();
+		}
+
 	}
 
 	@Override

@@ -33,7 +33,6 @@ public class Categorie implements IEntity {
 		this.id = id;
 	}
 
-
 	public String getCategorieName() {
 		return name;
 	}
@@ -44,8 +43,7 @@ public class Categorie implements IEntity {
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.name == null;
 	}
 
 }
