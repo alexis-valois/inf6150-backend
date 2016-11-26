@@ -46,8 +46,9 @@ public class UserController {
 			EBUser user = authService.authenticate(username, password);
 			rtn = this.assembler.getJSONResource(user);
 		} catch (Exception e) {
+			rtn.put("exists", authService.userExists(username));
 			logger.error(e.getMessage());
-			return new ResponseEntity<JSONObject>(HttpStatus.FORBIDDEN);
+			return new ResponseEntity<JSONObject>(rtn, HttpStatus.FORBIDDEN);
 		}
 		return new ResponseEntity<JSONObject>(rtn, HttpStatus.OK);
 	}
