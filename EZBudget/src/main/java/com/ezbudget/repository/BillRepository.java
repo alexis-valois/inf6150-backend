@@ -86,7 +86,12 @@ public class BillRepository implements IRepository<Bill> {
 		List<Filter> filters = qc.getFilters();
 		filters.add(new Filter("id", "eq", Long.toString(id)));
 		List<Bill> billList = findByCriteria(qc, sessionToken);
-		return billList.get(0);
+		if (!billList.isEmpty()) {
+			return billList.get(0);
+		} else {
+			return new Bill();
+		}
+
 	}
 
 	@Override

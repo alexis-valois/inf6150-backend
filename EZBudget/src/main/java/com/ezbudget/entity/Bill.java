@@ -80,7 +80,6 @@ public class Bill implements IEntity {
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.amount == null;
 	}
 }

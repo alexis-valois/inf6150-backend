@@ -29,10 +29,11 @@ public class SubEntityService {
 			JSONObject entity = entities.getJSONObject(i);
 			for (SubEntity sub : subEntitiesRequirements) {
 				if (repositories.containsKey(sub.getEntityName())) {
-					IRepository rep = repositories.get(sub.getEntityName());
+					IRepository<?> rep = repositories.get(sub.getEntityName());
 					IEntity subEntity = (IEntity) rep.findOne(entity.getLong(sub.getForeignKeyName()), sessionToken);
 					JSONObject jsonSubEntity = assembler.getJSONResource(subEntity);
 					entity.append(sub.getEntityName(), jsonSubEntity);
+
 				}
 			}
 		}

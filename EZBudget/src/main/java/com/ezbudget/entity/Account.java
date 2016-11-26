@@ -64,8 +64,7 @@ public class Account implements IEntity {
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.accountName == null;
 	}
 
 }

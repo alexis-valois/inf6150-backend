@@ -97,7 +97,12 @@ public class AccountRepository implements IRepository<Account> {
 		List<Filter> filters = qc.getFilters();
 		filters.add(new Filter("id", "eq", Long.toString(id)));
 		List<Account> accountList = findByCriteria(qc, sessionToken);
-		return accountList.get(0);
+		if (!accountList.isEmpty()) {
+			return accountList.get(0);
+		} else {
+			return new Account();
+		}
+
 	}
 
 	@Override

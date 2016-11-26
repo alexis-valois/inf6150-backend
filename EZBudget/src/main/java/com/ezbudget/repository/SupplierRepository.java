@@ -74,7 +74,12 @@ public class SupplierRepository implements IRepository<Supplier> {
 		List<Filter> filters = qc.getFilters();
 		filters.add(new Filter("id", "eq", Long.toString(id)));
 		List<Supplier> supplierList = findByCriteria(qc, sessionToken);
-		return supplierList.get(0);
+		if (!supplierList.isEmpty()) {
+			return supplierList.get(0);
+		} else {
+			return new Supplier();
+		}
+
 	}
 
 	@Override
